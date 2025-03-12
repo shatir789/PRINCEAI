@@ -1,0 +1,111 @@
+{
+  "name": "PRINCEAI",
+  "description": "whatsapp user bot",
+  "repository": "https://github.com/DASTAGHIR/PRINCEAI",
+  "logo": "https://qu.ax/lwgPL.jpg",
+  "success_url": "https://github.com/DASTAGHIR/PRINCEAI",
+  "keywords": [
+    "nodejs", "heroku", "bot", "urdu", "english", "indonesian", "arab", "portuguese", "italian", "french", "whatsapp",
+    "termux", "superbot", "multi-device", "md", "official", "javascript", "princebot"
+  ],
+  "image": "heroku/nodejs",
+  "stack": "container",
+  "env": {
+    "SESSION_ID": {
+      "description": "put your session ID here in the box below",
+      "required": true,
+      "value": ""
+    },
+    "BOT_NAME": {
+      "description": "put your BOT a name",
+      "required": true,
+      "value": "𝐃𝐔𝐑𝐑𝐀𝐍𝐈-𝐌𝐃"
+    },
+    "MODE": {
+      "description": "choose bot mode public or private",
+      "required": true,
+      "value": "public"
+    },
+    "PREFIX": {
+      "description": "put any one symbol here leave it Blank if you want to use multiple prefix",
+      "required": false,
+      "value": "" 
+    },
+    "antidelete": {
+      "description": "Set 'private' to forward deleted messages only from private chats, 'all' to forward from both private and group chats, or 'false' to disable this feature.",
+      "required": false,
+      "value": "all"
+    },
+    "DATABASE_URL": {
+      "description": "put mongodb or postgres or princedb database url for bots better performance",
+      "required": false,
+      "value": "postgres://u2u1khc8vouae0:p627a3212fa3088b979ce688ea522cf2fa03b132ac41e42e89a24aabbc8371a69@c9pv5s2sq0i76o.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d5ilp5bhl3l9vh"
+    },
+    "ANTI_LINK": {
+      "description": "it will dlt links and kick user",
+      "required": false,
+      "value": "true"
+    },
+    "AutoReaction": {
+      "description": "make it true to react on chats",
+      "required": false,
+      "value": "false"
+    },
+    "FIXED_EMOJI": {
+      "description": "put your favourite emoji for status react",
+      "required": false,
+      "value": ""
+    },
+    "VAR_APP": {
+      "description": "put same app name you entered above",
+      "required": false,
+      "value": ""
+    },
+    "VAR_KEY": {
+      "description": "put heroku key click on accounts scroll down copy that key past here",
+      "required": false,
+      "value": ""
+    },
+    "STATUSVIEW": {
+      "description": "make it true to auto view status and likes",
+      "required": false,
+      "value": "true"
+    },
+    "STATUS_MSG": {
+      "description": "Status reply msg",
+      "required": false,
+      "value": "𝐃𝐔𝐑𝐑𝐀𝐍𝐈-𝐌𝐃"
+    },
+    "REJECTSCALLS": {
+      "description": "reject calls",
+      "required": false,
+      "value": "false"
+    },
+    "CALLMSG": {
+      "description": "Call msg for reject calls",
+      "required": false,
+      "value": "For now calls are restricted by my owner"
+    },
+    "PACK_NAME": {
+      "description": "put your stickers pack name",
+      "required": false,
+      "value": "Prince♥️"
+    },
+    "DL_MSG": {
+      "description": "Video downloader caption",
+      "required": true,
+      "value": "𝐃𝐔𝐑𝐑𝐀𝐍𝐈-𝐌𝐃"
+    } 
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    },
+    {
+      "url": "https://github.com/bogini/heroku-buildpack-graphicsmagick"
+    },
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-activestorage-preview"
+    }
+  ]
+}
