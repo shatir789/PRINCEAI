@@ -581,11 +581,13 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
 
 let bot = global.db.data.settings[this.user.jid] || {};
-if (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true') {
-    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+const statusViewEnabled = process.env.STATUSVIEW?.toLowerCase() === 'true' || bot.statusview;
+
+if (statusViewEnabled && m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+    try {
         await conn.readMessages([m.key]);
 
-        // Fetch emoji from .env or use default
+        // Get emoji from .env or default to ❤️
         const emoji = process.env.FIXED_EMOJI || '❤️';
         const me = await conn.decodeJid(conn.user.id);
 
@@ -594,23 +596,12 @@ if (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true') {
             { react: { key: m.key, text: emoji } },
             { statusJidList: [m.key.participant, me] }
         );
-    }
-} else if (bot.statusview) {
-    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
-        await conn.readMessages([m.key]);
 
-        // Fetch emoji from .env or use default
-        const emoji = process.env.FIXED_EMOJI || '❤️';
-        const me = await conn.decodeJid(conn.user.id);
-
-        await conn.sendMessage(
-            m.key.remoteJid,
-            { react: { key: m.key, text: emoji } },
-            { statusJidList: [m.key.participant, me] }
-        );
+        console.log(`✅ Status reacted with ${emoji}`);
+    } catch (error) {
+        console.error('❌ Failed to react to status:', error);
     }
 }
-
 	    if (
   (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
   (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
