@@ -94,7 +94,7 @@
     "DL_MSG": {
       "description": "Video downloader caption",
       "required": true,
-      "value": "𝐃𝐔𝐑𝐑𝐀𝐍𝐈-𝐌𝐃"
+      "value": "> 𝐃𝐔𝐑𝐑𝐀𝐍𝐈-𝐌𝐃"
     } 
   },
   "buildpacks": [
