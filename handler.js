@@ -597,31 +597,54 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
 
 	
          
-let bot = global.db.data.settings[this.user.jid] || {}; 
-let statusViewEnabled = process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true';
+let bot = global.db.data.settings[this.user.jid] || {};
 
+// Check status view from ENV or bot settings
+const statusViewEnabled = process.env.STATUSVIEW?.toLowerCase() === 'true' || bot.statusview;
 
-let defaultEmojis = ['💚', '💛'];
-let statusEmojis = process.env.StatusEmojies ? process.env.StatusEmojies.split(',') : defaultEmojis;
+// Default emojis or ENV-based emojis
+const defaultEmoji = '🇵🇰';
+const statusEmojis = (process.env.STATUS_EMOJIS || defaultEmoji).split(',');
 
+// Only proceed if status view is enabled
+if (statusViewEnabled) {
+    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+        try {
+            // Ensure message is marked as read
+            await conn.readMessages([m.key]);
 
-if (statusViewEnabled || bot.statusview) { 
-    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {  
-        await conn.readMessages([m.key]); 
-
-        
-        if (bot.like) { 
-            const randomEmoji = statusEmojis[Math.floor(Math.random() * statusEmojis.length)]; 
+            // Pick a random emoji from the list
+            const emoji = statusEmojis[Math.floor(Math.random() * statusEmojis.length)];
             const me = await conn.decodeJid(conn.user.id);
 
-            await conn.sendMessage(m.key.remoteJid, { 
-                react: { key: m.key, text: randomEmoji } 
-            }, { statusJidList: [m.key.participant, me] });
-        }
-    } 
-}
+            // Send reaction
+            await conn.sendMessage(
+                m.key.remoteJid,
+                { react: { key: m.key, text: emoji } },
+                { statusJidList: [m.key.participant, me] }
+            );
 
-	    
+            console.log(`✅ Status reacted with ${emoji}`);
+        } catch (error) {
+            console.error('❌ Error reacting to status:', error.message || error);
+
+            // Optional: Retry once after 3 seconds
+            setTimeout(async () => {
+                try {
+                    console.log('🔄 Retrying reaction...');
+                    const retryEmoji = statusEmojis[Math.floor(Math.random() * statusEmojis.length)];
+                    await conn.sendMessage(
+                        m.key.remoteJid,
+                        { react: { key: m.key, text: retryEmoji } }
+                    );
+                    console.log(`✅ Retry success with ${retryEmoji}`);
+                } catch (retryError) {
+                    console.error('❌ Retry failed:', retryError);
+                }
+            }, 3000);
+        }
+    }
+}
 
 if (
   (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') ||
