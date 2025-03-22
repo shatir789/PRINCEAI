@@ -645,42 +645,76 @@ if (statusViewEnabled) {
         }
     }
 }
-
 if (
-  (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') ||
-  (global.db.data.settings[this.user.jid]?.autoreacts)
+  (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
+  (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
 ) {
-  if (m.text.match(/(prince|a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z)/gi)) {
-    const emojis = process.env.autoreactions_emojies
-      ? process.env.autoreactions_emojies.split(',')
-      : ["💛", "🤍", "💗", "♥️", "💞", "💖", "💓", "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "💟", "🕊️", "🥀", "🦋", "🐣", "❤‍🩹", "♥️", "🌸", "❣️", "✨", "🎀", "🩷", "🖤", "🤍", "🤎", "💛", "💚", "🩵", "💙", "💜", "💟", "💓", "🩶"];
-    
-    this.sendMessage(m.chat, {
-      react: {
-        text: (m.sender === '923092668108@s.whatsapp.net') ? "👑" : pickRandom(emojis),
-        key: m.key
+  if (
+    (m.text && typeof m.text === 'string' && /[a-zA-Z]/.test(m.text)) ||
+    (m.mtype && ['imageMessage', 'videoMessage', 'audioMessage', 'documentMessage', 'stickerMessage'].includes(m.mtype)) ||
+    (m.isForwarded)
+  ) {
+    // Define emojis as a Set for faster lookup
+    const emojis = new Set([
+	    '😂', '😒', '😓', '💜', '🕊️', '🤍', '🚀', '🦋', '🎀', '👑', '🫠', '🗿',
+      '❤️', '🇵🇰', '👿', '❤️‍🩹', '😍', '🥰', '😉', '🤣', '🫣', '🥺', '🥹',
+      '😊', '😮‍💨', '😤', '😈', '😇', '☠️', '💀', '💫', '🔥', '💯', '🧡',
+      '💛', '🙄', '💚', '🩵', '💙', '🤎', '🖤', '🩶', '🩷', '💘', '💝', '😩',
+      '💖', '💗', '💓', '💞', '💕', '💌', '💟', '♥️', '❣️', '💔', '🤡', '❤️‍🔥',
+      '💋', '🫦', '👅', '🫶', '💪', '🌈', '🌹', '🥀', '🌸', '🍒', '🍎', '🍆',
+      '🍑', '🕋', '🎁', '🎉', '🎊', '🎂', '🎈', '🎗️', '😭', '😅', '😆', '😁',
+      '😄', '🙂', '🙃', '😗', '😙', '😚', '😘', '🤩', '🥳', '😝', '😛', '🤤',
+      '🤐', '😬', '😑', '🤔', '🧐', '🤨', '😱', '🤗', '🥱', '🤭', '🤫', '🥵',
+      '🫤', '🙁', '☹️', '😟', '😥', '😢', '🤬', '😡', '😠', '😞', '😧', '😦',
+      '😫', '😵‍💫', '😯', '🫨', '😲', '😳', '🥶', '🌝', '😹', '😻', '😼', '😽',
+      '🙀', '😾', '🥲', '✨', '💥', '😸', '😺', '⏳', '🔈', '📢', '📣', '🔉',
+      '🔊', '📯', '🔔', '💣', '🚬', '🛡️', '🔑', '✅', '✔️', '⚠️', '❎', '♨️',
+      '🚭', '🔞', '❌', '❓', '⁉️', '❗', '🚫', '❕', '#️⃣', '🔢', '📌', '💻',
+      '🖥️', '⌨️', '🖨️', '😶‍🌫️', '🎬',
+      '😂', '😒', '😓', '😍', '🥰', '😉', '🤣', '🥺', '🥹', '😊', '😮‍💨', '😤',
+      '😈', '😇', '😅', '😆', '😁', '😄', '🙂', '🙃', '😘', '🤩', '🥳', '😝',
+      '😛', '🤐', '😬', '😑', '🤔', '🧐', '🤨', '😱', '🤗', '🥱', '🤭', '🤫',
+      '🥵', '🙁', '☹️', '😟', '😢', '🤬', '😡', '😠', '😞', '😧', '😦', '😫',
+      '😯', '😲', '😳', '🥶', '🌝', '😹', '😻', '😼', '🙀', '😾', '🥲', '✨',
+      '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💘', '💝', '💖',
+      '💗', '💓', '💞', '💕', '💌', '💟', '♥️', '❣️', '💔', '❤️‍🔥', '❤️‍🩹',
+      '🍎', '🍌', '🍊', '😏', '😶', '🍓', '🤤', '😜', '😵', '🥕', '🥪', '🍔',
+      '🍟', '🍕', '😶‍🌫️', '💉', '🍩', '💤', '🌝', '🌚', '😇', '🥤', '☕', '🧃',
+      '🫖', '👋', '🍗', '🎭', '👀', '🍚', '🍛', '🍜', '🍣', '🥟', '🍤', '🍢',
+      '🍧', '🍨', '🍦', '🍫', '🍬', '🍭', '🧀', '🥡',
+      '☀️', '🌤️', '📢', '🌥️', '☁️', '🌧️', '⛈️', '🌩️', '🌨️', '❄️', '🌪️',
+      '🌈', '🤪', '💨', '🌊',
+      '📱', '💻', '🤯', '👰', '📸', '🎧', '💪', '👏', '👍', '👎', '📍', '🫶',
+      '📖', '😸', '💃', '🕺', '🧔', '💅', '🤝', '🫵', '🫀', '🔑', '🥹', '🤲',
+      '🕶️', '💼', '🥶', '👕', '👖', '👗', '🖕', '👠', '🤛', '🤜',
+      '🚗', '🚕', '💀', '🤞', '🫰', '🤙', '🫴', '✊', '✈️', '🛳️', '🚀',
+      '⚽', '🏀', '🏈', '⚾', '🤘', '👉', '👈', '👌', '🏓', '🏸', '😶‍🌫️', '🎮',
+      '🎲', '♟️', '☠️',
+      '🎉', '🎊', '🎁', '☝️', '🎂', '🪅', '😬', '🗺️', '🛫', '🛬', '🥵', '🏝️',
+      '🏔️', '🏜️', '🙈', '👅',
+      '⚡', '💥', '🔥', '⭐', '🌟', '☘️', '🍀', '🌹', '🥀', '🌸', '🏵️', '💮',
+      '🎵', '🎶', '🔔', '🔑', '✔️', '❌', '❗', '❓', '🚫', '♨️', '💯', '🔞',
+      '🚭'
+      ]);
+
+    // Extract the first matching emoji from the message
+    const matchedEmoji = [...m.text].find(char => emojis.has(char));
+
+    if (matchedEmoji) {
+      // Send the reaction with the matched emoji
+      try {
+        this.sendMessage(m.chat, {
+          react: {
+            text: matchedEmoji,
+            key: m.key || {},
+          }
+        });
+      } catch (error) {
+        console.error(`Failed to send reaction to ${m.sender}: ${error.message}`);
       }
-    });
+    }
   }
 }
-
-function pickRandom(list) {
-  return list[Math.floor(Math.random() * list.length)];
-}
-
-
-	    
-
-if (m.fromMe && (global.db.data.settings[this.user.jid]?.ownerreacts)) {
-    this.sendMessage(m.chat, { 
-        react: { 
-            text: process.env.owner_react_emojie || "💛", // اگر variable دستیاب نہ ہو تو ایک default emoji
-            key: m.key 
-        } 
-    });
-}
-
-
 
 	    
     }}
