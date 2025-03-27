@@ -157,19 +157,18 @@ global.eror = '```404 error```'
 //💌------------------------------------------💌
 
 
-dotenv.config()
+dotenv.config();
 
-const ownervb = process.env.OWNER_NUMBER || ""; // Environment variable se OWNER_NUMBER lete hain
-const ownerlist = ownervb.split(',');
-global.owner = [["923006838210", "FAISAL🌹", true]];
-for (let i = 0; i < ownerlist.length; i += 2) {
-    const owner = [
-        ownerlist[i],            // Owner number
-        ownerlist[i + 1] || "",  // Owner name (default empty if not provided)
-        true                     // Status
-    ];
-    global.owner.push(owner);
-}
+const ownervb = process.env.OWNER_NUMBER || "";  
+const ownerlist = ownervb ? ownervb.split(',') : [];
+
+// Default owner (Ye tab use hoga jab .env empty ho)
+const defaultOwner = ["923006838210", "FAISAL🌹", true];
+
+// Agar .env me OWNER_NUMBER hai to wahi use karein, warna default owner
+global.owner = ownerlist.length >= 2 
+    ? [ownerlist.slice(0, 2).concat(true)]  // Pehla number aur naam le lo
+    : [defaultOwner];
 
 
 let file = fileURLToPath(import.meta.url)
