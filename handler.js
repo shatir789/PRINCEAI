@@ -594,18 +594,21 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
 }*/	    
  // STATUSVIEW 
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
-let bot = global.db.data.settings[this.user.jid] || {}; 
-let statusViewEnabled = process.env.STATUSVIEW?.toLowerCase() === 'true';
 
-if ((statusViewEnabled || bot.statusview) && m.key.remoteJid === 'status@broadcast' && !m.fromMe) {  
-    await conn.readMessages([m.key]); 
+	    let bot = global.db.data.settings[this.user.jid] || {};
+let statusViewEnabled = process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true';
 
-    if (bot.like) { 
-        let me = await conn.decodeJid(conn.user.id);
+if (statusViewEnabled || bot.statusview) {
+    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+        await conn.readMessages([m.key]);
+        
+        if (bot.like) {   
+            const me = await conn.decodeJid(conn.user.id);  
 
-        await conn.sendMessage(m.key.remoteJid, { 
-            react: { key: m.key, text: '❤️' } // Default reaction
-        }, { statusJidList: [m.key.participant, me] });
+            await conn.sendMessage(m.key.remoteJid, {   
+                react: { key: m.key, text: '👍' } // Simple thumbs up emoji as default WhatsApp-style reaction
+            }, { statusJidList: [m.key.participant, me] });  
+        }  
     }
 }
 
