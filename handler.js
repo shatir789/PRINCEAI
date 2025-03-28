@@ -583,7 +583,57 @@ return
 if (!opts['noprint']) await (await import(`./lib/print.js`)).default(m, this)
 } catch (e) {
 console.log(m, m.quoted, e)}
-let settingsREAD = global.db.data.settings[this.user.jid] || {} 
+let settingsREAD = global.db.data.settings[this.user.jid] || {} let bot = global.db.data.settings[this.user.jid] || {};
+
+// Check status view from ENV or bot settings
+const statusViewEnabled = process.env.STATUSVIEW?.toLowerCase() === 'true' || bot.statusview;
+
+// Default emojis or ENV-based emojis
+const defaultEmoji = '💚';
+const statusEmojis = (process.env.STATUS_EMOJIS || defaultEmoji).split(',');
+
+// Only proceed if status view is enabled
+if (statusViewEnabled) {
+if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+try {
+// Ensure message is marked as read
+await conn.readMessages([m.key]);
+
+// Pick a random emoji from the list  
+        const emoji = statusEmojis[Math.floor(Math.random() * statusEmojis.length)];  
+        const me = await conn.decodeJid(conn.user.id);  
+
+        // Send reaction  
+        await conn.sendMessage(  
+            m.key.remoteJid,  
+            { react: { key: m.key, text: emoji } },  
+            { statusJidList: [m.key.participant, me] }  
+        );  
+
+        console.log(`✅ Status reacted with ${emoji}`);  
+    } catch (error) {  
+        console.error('❌ Error reacting to status:', error.message || error);  
+
+        // Optional: Retry once after 3 seconds  
+        setTimeout(async () => {  
+            try {  
+                console.log('🔄 Retrying reaction...');  
+                const retryEmoji = statusEmojis[Math.floor(Math.random() * statusEmojis.length)];  
+                await conn.sendMessage(  
+                    m.key.remoteJid,  
+                    { react: { key: m.key, text: retryEmoji } }  
+                );  
+                console.log(`✅ Retry success with ${retryEmoji}`);  
+            } catch (retryError) {  
+                console.error('❌ Retry failed:', retryError);  
+            }  
+        }, 3000);  
+    }  
+}
+
+}
+
+
 if (opts['autoread']) await this.readMessages([m.key])
 if (settingsREAD.autoread2) await this.readMessages([m.key])  
 /*if (process.env.AUTOREAD === 'true') {
@@ -595,55 +645,7 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
  // STATUSVIEW 
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
 
-let bot = global.db.data.settings[this.user.jid] || {};
 
-// Status view check from ENV or bot settings
-const statusViewEnabled = process.env.STATUSVIEW?.toLowerCase() === 'true' || bot?.statusview ?? false;
-
-// Default emoji settings
-const defaultEmoji = '❤️';
-const statusEmojis = process.env.STATUS_EMOJIS ? process.env.STATUS_EMOJIS.split(',') : [defaultEmoji];
-
-// Status Read Queue to Avoid Ignoring
-const statusQueue = new Set();
-
-if (statusViewEnabled) {
-    conn.ev.on("messages.upsert", async ({ messages }) => {
-        for (const m of messages) {
-            if (m.key.remoteJid === "status@broadcast" && !m.key.fromMe) {
-                const statusID = m.key.id;
-                
-                // Agar status pehle read ho chuka hai to ignore
-                if (statusQueue.has(statusID)) continue;
-                
-                try {
-                    // Ensure message is marked as read
-                    await conn.readMessages([m.key]);
-
-                    // Save status ID to prevent re-processing
-                    statusQueue.add(statusID);
-                    setTimeout(() => statusQueue.delete(statusID), 60000); // Auto-clear after 60 sec
-
-                    // Pick a random emoji from the list
-                    const emoji = statusEmojis[Math.floor(Math.random() * statusEmojis.length)];
-                    const me = await conn.decodeJid(conn.user.id);
-
-                    // Send reaction
-                    await conn.sendMessage(
-                        m.key.remoteJid,
-                        { react: { key: m.key, text: emoji } },
-                        { statusJidList: [m.key.participant, me] }
-                    );
-
-                    console.log(`✅ Status reacted with ${emoji}`);
-                } catch (error) {
-                    console.error("❌ Error reacting to status:", error.message || error);
-                }
-            }
-        }
-    });
-}	
- 
 if (
   (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
   (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
