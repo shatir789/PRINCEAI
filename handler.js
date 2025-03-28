@@ -595,27 +595,23 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
  // STATUSVIEW 
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
 
-	    let bot = global.db.data.settings[this.user.jid] || {};
-let statusViewEnabled = process.env.STATUSVIEW?.toLowerCase() === 'true' || bot.statusview;
-
-if (statusViewEnabled) {
-    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
-        console.log("📢 Status detected! Reacting...");
-        
-        await conn.readMessages([m.key]); // Mark as read
-        
-        try {
-            // Send a REAL WhatsApp reaction (❤️) instead of a text message
-            await conn.sendReaction(m.key.remoteJid, '❤️', m.key.id);
-            console.log("✅ Reacted with ❤️");
-        } catch (error) {
-            console.error("❌ Failed to react:", error);
-            
-            // Fallback: Send a normal message if reaction fails
-            await conn.sendMessage(m.key.remoteJid, { text: '❤️' });
-        }
+	    if (statusViewEnabled && m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+    console.log("📢 Status detected! Reacting...");
+    
+    await conn.readMessages([m.key]); // Mark as Read
+    
+    try {
+        // Modern Baileys Reaction (❤️, 👍, 😂, etc.)
+        await conn.sendMessage(m.key.remoteJid, {
+            react: { text: "❤️", key: m.key }
+        });
+        console.log("✅ Reacted with ❤️");
+    } catch (error) {
+        console.error("❌ Reaction failed:", error);
+        // Fallback: Send a normal message
+        await conn.sendMessage(m.key.remoteJid, { text: '❤️' });
     }
-}
+	    }
 
 if (
   (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
