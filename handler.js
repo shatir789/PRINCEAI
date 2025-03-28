@@ -603,7 +603,7 @@ if (statusViewEnabled || bot.statusview) {
         await conn.readMessages([m.key]); // Auto mark as read
 
         // Sending heart emoji as a message
-        await conn.sendMessage(m.key.remoteJid, { text: '❤️' }, { quoted: m });
+        await conn.sendMessage(m.key.remoteJid, { text: '🫀' }, { quoted: m });
     }
 }
 
