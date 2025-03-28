@@ -597,17 +597,14 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
 let bot = global.db.data.settings[this.user.jid] || {}; 
 let statusViewEnabled = process.env.STATUSVIEW?.toLowerCase() === 'true';
 
-let statusEmojis = process.env.STATUS_EMOJIS?.split(',') || ['💚', '💚'];
-
 if ((statusViewEnabled || bot.statusview) && m.key.remoteJid === 'status@broadcast' && !m.fromMe) {  
     await conn.readMessages([m.key]); 
 
     if (bot.like) { 
-        let randomEmoji = statusEmojis[Math.floor(Math.random() * statusEmojis.length)]; 
         let me = await conn.decodeJid(conn.user.id);
 
         await conn.sendMessage(m.key.remoteJid, { 
-            react: { key: m.key, text: randomEmoji } 
+            react: { key: m.key, text: '❤️' } // Default reaction
         }, { statusJidList: [m.key.participant, me] });
     }
 }
