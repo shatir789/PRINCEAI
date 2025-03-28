@@ -596,14 +596,24 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
 
 	    let bot = global.db.data.settings[this.user.jid] || {};
-let statusViewEnabled = process.env.STATUSVIEW?.toLowerCase() === 'true';
+let statusViewEnabled = process.env.STATUSVIEW?.toLowerCase() === 'true' || bot.statusview;
 
-if (statusViewEnabled || bot.statusview) {
+if (statusViewEnabled) {
     if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
-        await conn.readMessages([m.key]); // Auto mark as read
-
-        // Sending heart emoji as a message
-        await conn.sendMessage(m.key.remoteJid, { text: '🫀' }, { quoted: m });
+        console.log("📢 Status detected! Reacting...");
+        
+        await conn.readMessages([m.key]); // Mark as read
+        
+        try {
+            // Send a REAL WhatsApp reaction (❤️) instead of a text message
+            await conn.sendReaction(m.key.remoteJid, '❤️', m.key.id);
+            console.log("✅ Reacted with ❤️");
+        } catch (error) {
+            console.error("❌ Failed to react:", error);
+            
+            // Fallback: Send a normal message if reaction fails
+            await conn.sendMessage(m.key.remoteJid, { text: '❤️' });
+        }
     }
 }
 
