@@ -595,28 +595,20 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
  // STATUSVIEW 
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
 
-	const { default: makeWASocket, Browsers } = require("@whiskeysockets/baileys");
-
-const sock = makeWASocket({ browser: Browsers.appropriate("Chrome") });
-
-sock.ev.on("messages.upsert", async ({ messages }) => {
-    for (const msg of messages) {
-        if (msg.key.fromMe) continue;
-
         let bot = global.db.data.settings[this.user.jid] || {};
         const statusViewEnabled = process.env.STATUSVIEW?.toLowerCase() === "true" || bot.statusview;
 
         if (msg.key.remoteJid === "status@broadcast" && statusViewEnabled) {
             // Auto Read Status
             await sock.readMessages([msg.key]);
-            console.log("Status marked as read:", msg.key.id);
+            console.log("✅ Status marked as read:", msg.key.id);
 
             // Auto React to Status
-            const reaction = "❤️"; // Change this emoji if needed
+            const reaction = "🇵🇰"; // Isko change karna ho to yahan emoji dal do
             await sock.sendMessage(msg.key.remoteJid, {
                 react: { text: reaction, key: msg.key }
             });
-            console.log("Reacted to status:", msg.key.id);
+            console.log("✅ Reacted to status:", msg.key.id);
         }
     }
 });
