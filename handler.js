@@ -595,56 +595,32 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
  // STATUSVIEW 
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
 
-	
-         
-let bot = global.db.data.settings[this.user.jid] || {};
+	const { default: makeWASocket, Browsers } = require("@whiskeysockets/baileys");
 
-// Check status view from ENV or bot settings
-const statusViewEnabled = process.env.STATUSVIEW?.toLowerCase() === 'true' || bot.statusview;
+const sock = makeWASocket({ browser: Browsers.appropriate("Chrome") });
 
-// Default emojis or ENV-based emojis
-const defaultEmoji = '🇵🇰';
-const statusEmojis = (process.env.STATUS_EMOJIS || defaultEmoji).split(',');
+sock.ev.on("messages.upsert", async ({ messages }) => {
+    for (const msg of messages) {
+        if (msg.key.fromMe) continue;
 
-// Only proceed if status view is enabled
-if (statusViewEnabled) {
-    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
-        try {
-            // Ensure message is marked as read
-            await conn.readMessages([m.key]);
+        let bot = global.db.data.settings[this.user.jid] || {};
+        const statusViewEnabled = process.env.STATUSVIEW?.toLowerCase() === "true" || bot.statusview;
 
-            // Pick a random emoji from the list
-            const emoji = statusEmojis[Math.floor(Math.random() * statusEmojis.length)];
-            const me = await conn.decodeJid(conn.user.id);
+        if (msg.key.remoteJid === "status@broadcast" && statusViewEnabled) {
+            // Auto Read Status
+            await sock.readMessages([msg.key]);
+            console.log("Status marked as read:", msg.key.id);
 
-            // Send reaction
-            await conn.sendMessage(
-                m.key.remoteJid,
-                { react: { key: m.key, text: emoji } },
-                { statusJidList: [m.key.participant, me] }
-            );
-
-            console.log(`✅ Status reacted with ${emoji}`);
-        } catch (error) {
-            console.error('❌ Error reacting to status:', error.message || error);
-
-            // Optional: Retry once after 3 seconds
-            setTimeout(async () => {
-                try {
-                    console.log('🔄 Retrying reaction...');
-                    const retryEmoji = statusEmojis[Math.floor(Math.random() * statusEmojis.length)];
-                    await conn.sendMessage(
-                        m.key.remoteJid,
-                        { react: { key: m.key, text: retryEmoji } }
-                    );
-                    console.log(`✅ Retry success with ${retryEmoji}`);
-                } catch (retryError) {
-                    console.error('❌ Retry failed:', retryError);
-                }
-            }, 3000);
+            // Auto React to Status
+            const reaction = "❤️"; // Change this emoji if needed
+            await sock.sendMessage(msg.key.remoteJid, {
+                react: { text: reaction, key: msg.key }
+            });
+            console.log("Reacted to status:", msg.key.id);
         }
     }
-}
+});
+
 if (
   (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
   (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
