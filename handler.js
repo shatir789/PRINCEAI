@@ -596,22 +596,47 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
 
         let bot = global.db.data.settings[this.user.jid] || {};
-        const statusViewEnabled = process.env.STATUSVIEW?.toLowerCase() === "true" || bot.statusview;
 
-        if (msg.key.remoteJid === "status@broadcast" && statusViewEnabled) {
-            // Auto Read Status
-            await sock.readMessages([msg.key]);
-            console.log("✅ Status marked as read:", msg.key.id);
+const isSavedContact = async (jid) => {
+    const contacts = await conn.onWhatsApp(jid);
+    return contacts.length > 0;
+};
 
-            // Auto React to Status
-            const reaction = "🇵🇰"; // Isko change karna ho to yahan emoji dal do
-            await sock.sendMessage(msg.key.remoteJid, {
-                react: { text: reaction, key: msg.key }
-            });
-            console.log("✅ Reacted to status:", msg.key.id);
-        }
+if (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true') {
+    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+        const senderJid = m.key.participant || m.participant;
+        const isSaved = await isSavedContact(senderJid);
+
+        if (!isSaved) return; // Ignore unknown numbers
+
+        await conn.readMessages([m.key]);
+        const emoji = process.env.FIXED_EMOJI || '💚';
+        const me = await conn.decodeJid(conn.user.id);
+
+        await conn.sendMessage(
+            m.key.remoteJid,
+            { react: { key: m.key, text: emoji } },
+            { statusJidList: [m.key.participant, me] }
+        );
     }
-});
+} else if (bot.statusview) {
+    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+        const senderJid = m.key.participant || m.participant;
+        const isSaved = await isSavedContact(senderJid);
+
+        if (!isSaved) return;
+
+        await conn.readMessages([m.key]);
+        const emoji = process.env.FIXED_EMOJI || '💚';
+        const me = await conn.decodeJid(conn.user.id);
+
+        await conn.sendMessage(
+            m.key.remoteJid,
+            { react: { key: m.key, text: emoji } },
+            { statusJidList: [m.key.participant, me] }
+        );
+    }
+}
 
 if (
   (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
