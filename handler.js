@@ -603,7 +603,7 @@ let bot = global.db.data.settings[this.user.jid] || {};
 const statusViewEnabled = process.env.STATUSVIEW?.toLowerCase() === 'true' || bot.statusview;
 
 // Default emojis or ENV-based emojis
-const defaultEmoji = '🇵🇰';
+const defaultEmoji = '💚';
 const statusEmojis = (process.env.STATUS_EMOJIS || defaultEmoji).split(',');
 
 // Only proceed if status view is enabled
