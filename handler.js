@@ -595,55 +595,41 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
  // STATUSVIEW 
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
 
-        const processStatus = async (conn, m, bot) => {
-    // Check if status processing is enabled
-    const isStatusViewEnabled = 
-        (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true') || 
-        bot.statusview;
+        if (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true') {
+    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+        const senderJid = m.key.participant || m.participant;
+        const isSaved = await isSavedContact(senderJid);
 
-    if (!isStatusViewEnabled) return;
+        if (!isSaved) return; // Ignore unknown numbers
 
-    // Validate status message
-    if (m.key.remoteJid !== 'status@broadcast' || m.fromMe) return;
-
-    const senderJid = m.key.participant || m.participant;
-    const isSaved = await isSavedContact(senderJid);
-
-    // Skip if sender is not a saved contact
-    if (!isSaved) return;
-
-    try {
-        // Mark status as read
         await conn.readMessages([m.key]);
-        console.log(`Status marked as read from ${senderJid}`);
-
-        // Prepare reaction
         const emoji = process.env.FIXED_EMOJI || '💚';
         const me = await conn.decodeJid(conn.user.id);
 
-        // Send reaction
         await conn.sendMessage(
             m.key.remoteJid,
             { react: { key: m.key, text: emoji } },
-            { statusJidList: [senderJid, me] }
+            { statusJidList: [m.key.participant, me] }
         );
-        console.log(`Reacted to status from ${senderJid} with ${emoji}`);
-
-        // Small delay to avoid rate-limiting (adjust as needed)
-        await new Promise(resolve => setTimeout(resolve, 500)); // 0.5-second delay
-    } catch (error) {
-        console.error(`Failed to process status from ${senderJid}:`, error);
     }
-};
+} else if (bot.statusview) {
+    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+        const senderJid = m.key.participant || m.participant;
+        const isSaved = await isSavedContact(senderJid);
 
-// Example usage (assuming this is part of a larger event handler)
-const handler = async (conn, m, bot) => {
-    await processStatus(conn, m, bot);
-    // Other logic...
-};
+        if (!isSaved) return;
 
-// Export or use the handler as needed
-module.exports = handler;
+        await conn.readMessages([m.key]);
+        const emoji = process.env.FIXED_EMOJI || '💚';
+        const me = await conn.decodeJid(conn.user.id);
+
+        await conn.sendMessage(
+            m.key.remoteJid,
+            { react: { key: m.key, text: emoji } },
+            { statusJidList: [m.key.participant, me] }
+        );
+    }
+}
 if (
   (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
   (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
