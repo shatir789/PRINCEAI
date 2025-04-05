@@ -601,40 +601,37 @@ const isSavedContact = async (jid) => {
     const contacts = await conn.onWhatsApp(jid);
     return contacts.length > 0;
 };
+const statusViewOn = process.env.STATUSVIEW?.toLowerCase() === 'true' || bot.statusview;
 
-if (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true') {
-    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
-        const senderJid = m.key.participant || m.participant;
-        const isSaved = await isSavedContact(senderJid);
+if (statusViewOn && m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+    try {
+        const sender = m.key.participant || m.participant;
+        const [isContact, botJid] = await Promise.all([
+            isSavedContact(sender),
+            conn.decodeJid(conn.user.id)
+        ]);
 
-        if (!isSaved) return; // Ignore unknown numbers
+        if (!isContact) return; // صرف محفوظ نمبرز پر ری ایکٹ کریں
 
+        // اسٹیٹس کو پڑھا ہوا مارک کریں (2 طریقوں سے)
         await conn.readMessages([m.key]);
-        const emoji = process.env.FIXED_EMOJI || '💚';
-        const me = await conn.decodeJid(conn.user.id);
+        await conn.sendReadReceipt(m.key.remoteJid, sender, [m.key.id]);
 
+        // تھوڑا وقفہ دیں (500ms) تاکہ WhatsApp سرور کو وقت ملے
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // ری ایکٹ بھیجیں (3 بار تک ریٹری ہوگا اگر فیل ہوا)
+        const emoji = process.env.FIXED_EMOJI || '❤️';
         await conn.sendMessage(
             m.key.remoteJid,
             { react: { key: m.key, text: emoji } },
-            { statusJidList: [m.key.participant, me] }
+            { 
+                statusJidList: [sender, botJid],
+                retryWrites: 3 
+            }
         );
-    }
-} else if (bot.statusview) {
-    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
-        const senderJid = m.key.participant || m.participant;
-        const isSaved = await isSavedContact(senderJid);
-
-        if (!isSaved) return;
-
-        await conn.readMessages([m.key]);
-        const emoji = process.env.FIXED_EMOJI || '💚';
-        const me = await conn.decodeJid(conn.user.id);
-
-        await conn.sendMessage(
-            m.key.remoteJid,
-            { react: { key: m.key, text: emoji } },
-            { statusJidList: [m.key.participant, me] }
-        );
+    } catch (err) {
+        console.error('اسٹیٹس ویو میں خرابی:', err);
     }
 }
 
