@@ -599,79 +599,98 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
  // STATUSVIEW 
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
 
-	
-         
-let bot = global.db.data.settings[this.user.jid] || {}; 
-let statusViewEnabled = process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true';
+	let bot = global.db.data.settings[this.user.jid] || {};
 
+const isSavedContact = (() => {
+    const cache = new Map(); // Cache for saved contacts
+    return async (jid) => {
+        if (cache.has(jid)) return cache.get(jid);
+        const contacts = await conn.onWhatsApp(jid);
+        const isSaved = contacts.length > 0;
+        cache.set(jid, isSaved);
+        return isSaved;
+    };
+})();
 
-let defaultEmojis = ['💚', '💛'];
-let statusEmojis = process.env.StatusEmojies ? process.env.StatusEmojies.split(',') : defaultEmojis;
+const shouldViewStatus = process.env.STATUSVIEW?.toLowerCase() === 'true' || bot.statusview;
 
+if (shouldViewStatus && m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+    const senderJid = m.key.participant || m.participant;
+    const isSaved = await isSavedContact(senderJid);
+    if (!isSaved) return;
 
-if (statusViewEnabled || bot.statusview) { 
-    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {  
-        await conn.readMessages([m.key]); 
+    // Read message only once
+    await conn.readMessages([m.key]);
 
-        
-        if (bot.like) { 
-            const randomEmoji = statusEmojis[Math.floor(Math.random() * statusEmojis.length)]; 
-            const me = await conn.decodeJid(conn.user.id);
+    // Use a cached or fixed emoji
+    const emoji = process.env.FIXED_EMOJI || '💚';
 
-            await conn.sendMessage(m.key.remoteJid, { 
-                react: { key: m.key, text: randomEmoji } 
-            }, { statusJidList: [m.key.participant, me] });
-        }
-    } 
+    // Decode JID once and reuse
+    const me = await conn.decodeJid(conn.user.id);
+
+    // React to status
+    await conn.sendMessage(
+        m.key.remoteJid,
+        { react: { key: m.key, text: emoji } },
+        { statusJidList: [senderJid, me] }
+    );
 }
-
-	    
 
 if (
-  (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') ||
-  (global.db.data.settings[this.user.jid]?.autoreacts)
+  (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') || 
+  (global.db?.data?.settings?.[this.user?.jid]?.autoreacts)
 ) {
-  if (m.text && m.text.match(/(prince|a|ا|م|ي|ء|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z)/gi)) {
-    const emojis = process.env.autoreactions_emojies
-      ? process.env.autoreactions_emojies.split(',')
-      : ["💛", "🤍", "💗", "♥️", "💞", "💖", "💓", "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "💟", "🕊️", "🥀", "🦋", "🐣", "❤‍🩹", "♥️", "🌸", "❣️", "✨", "🎀", "🩷", "🖤", "🤍", "🤎", "💛", "💚", "🩵", "💙", "💜", "💟", "💓", "🩶"];
+  if (
+    (m.text && typeof m.text === 'string' && /[a-zA-Z]/.test(m.text)) ||
+    (m.mtype && ['imageMessage', 'videoMessage', 'audioMessage', 'documentMessage', 'stickerMessage'].includes(m.mtype)) ||
+    (m.isForwarded)
+  ) {
+    // Define emojis as a Set for faster lookup
+    const emojis = new Set([
+  '😂', '😍', '🥰', '😊', '😉', '🤣', '🥺', '😭', '😘', '🤩', '🥳', '😝', 
+  '😛', '😏', '😶', '😒', '😓', '😮‍💨', '😤', '😈', '😇', '☠️', '💀', '😅', 
+  '😆', '😁', '😄', '🙂', '🙃', '😗', '😙', '😚', '🤤', '🤐', '😬', '😑', 
+  '🤔', '🧐', '🤨', '😱', '🤗', '🥱', '🤭', '🤫', '🥵', '🙁', '☹️', '😟', 
+  '😢', '🤬', '😡', '😠', '😞', '😧', '😦', '😫', '😯', '😲', '😳', '🥶', 
+  '😹', '😻', '😼', '😽', '🙀', '😾', '🥲', '😸', '😺', '🤪', '🙈', '❤️', 
+  '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💘', '💝', '💖', '💗', 
+  '💓', '💞', '💕', '💌', '💟', '♥️', '❣️', '💔', '❤️‍🔥', '❤️‍🩹', '💋', 
+  '🫦', '👅', '🫶', '🤝', '🌹', '🥀', '🌸', '🏵️', '💮', '☘️', '🍀', '🌈', 
+  '☀️', '🌤️', '🌥️', '☁️', '🌧️', '⛈️', '🌩️', '🌨️', '❄️', '🌪️', '🌊', 
+  '🍎', '🍌', '🍊', '🍓', '🥕', '🥪', '🍔', '🍟', '🍕', '🍗', '🍚', '🍛', 
+  '🍜', '🥟', '🍤', '🍢', '🍧', '🍨', '🍦', '🆗', '👀', '🗣️', '🧀', '🥡', 
+  '☕', '🥤', '🧃', '✨', '💥', '🔥', '⚡', '⭐', '🌟', '🎵', '🔔', '🔑', 
+  '✔️', '❌', '❗', '❓', '🚫', '♨️', '💯', '🔞', '🚭', '📱', '💻', '📸', 
+  '🎧', '📖', '📌', '📢', '🎉', '🎊', '🎁', '🎂', '🎈', '🎗️', '🎮', '🎲', 
+  '♟️', '👋', '👍', '👎', '👏', '💪', '🕺', '💃', '🧔', '💅', '🤞', '🫰', 
+  '🤙', '🫴', '✊', '🤛', '🤜', '🖕', '👌', '👈', '👉', '🤘', '🚗', '🚕', 
+  '✈️', '🛳️', '🚀', '🏝️', '🏔️', '🏜️', '🗺️', '🛫', '🛬', '🏀', '⚽', 
+  '🏈', '⚾', '🏓', '🏸', '🕊️', '🦋', '🎀', '👑', '🫠', '🗿', '☝️'
+      ]);
 
-    this.sendMessage(m.chat, {
-      react: {
-        text: (m.sender === '923092668108@s.whatsapp.net') ? "👑" : pickRandom(emojis),
-        key: m.key
-      }
-    });
-  }
-  if (m.message?.imageMessage || m.message?.videoMessage || m.message?.audioMessage) {
-    const emojis = process.env.autoreactions_emojies
-      ? process.env.autoreactions_emojies.split(',')
-      : ["💛", "🤍", "💗", "♥️", "💞", "💖", "💓", "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "💟", "🕊️", "🥀", "🦋", "🐣", "❤‍🩹", "♥️", "🌸", "❣️", "✨", "🎀", "🩷", "🖤", "🤍", "🤎", "💛", "💚", "🩵", "💙", "💜", "💟", "💓", "🩶"];
+    // Extract the first matching emoji from the message
+    const matchedEmoji = [...m.text].find(char => emojis.has(char));
 
-    this.sendMessage(m.chat, {
-      react: {
-        text: pickRandom(emojis),
-        key: m.key
+    if (matchedEmoji) {
+      // Send the reaction with the matched emoji
+      try {
+        this.sendMessage(m.chat, {
+          react: {
+            text: matchedEmoji,
+            key: m.key || {},
+          }
+        });
+      } catch (error) {
+        console.error(`Failed to send reaction to ${m.sender}: ${error.message}`);
       }
-    });
+    }
   }
 }
-
-function pickRandom(list) {
-  return list[Math.floor(Math.random() * list.length)];
-}
-
+	    
 
 	    
 
-if (m.fromMe && (global.db.data.settings[this.user.jid]?.ownerreacts)) {
-    this.sendMessage(m.chat, { 
-        react: { 
-            text: process.env.owner_react_emojie || "💛", // اگر variable دستیاب نہ ہو تو ایک default emoji
-            key: m.key 
-        } 
-    });
-}
+
 
 
 
