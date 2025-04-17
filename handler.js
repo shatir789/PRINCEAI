@@ -619,52 +619,28 @@ if (statusViewEnabled || bot.statusview) {
 }
 	    
 	    
-
 if (
   (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') ||
   (global.db.data.settings[this.user.jid]?.autoreacts)
 ) {
-  if (m.text && m.text.match(/(prince|a|ا|م|ي|ء|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z)/gi)) {
-    const emojis = process.env.autoreactions_emojies
-      ? process.env.autoreactions_emojies.split(',')
-      : ["💛", "🤍", "💗", "♥️", "💞", "💖", "💓", "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "💟", "🕊️", "🥀", "🦋", "🐣", "❤‍🩹", "♥️", "🌸", "❣️", "✨", "🎀", "🩷", "🖤", "🤍", "🤎", "💛", "💚", "🩵", "💙", "💜", "💟", "💓", "🩶"];
-
-    this.sendMessage(m.chat, {
-      react: {
-        text: (m.sender === '923092668108@s.whatsapp.net') ? "👑" : pickRandom(emojis),
-        key: m.key
+  if (!isReact) {
+    // Check if message contains a link (http/https) or just numbers (1, 2, 3, 4)
+    const hasLink = /https?:\/\/\S+/i.test(m.body);
+    const isOnlyNumbers = /^[\d\s]+$/.test(m.body);
+    
+    // If no link and not just numbers, then check for emoji
+    if (!hasLink && !isOnlyNumbers) {
+      const emojis = m.body.match(/[\p{Emoji}]/gu);
+      if (emojis?.length) {
+        try {
+          await m.react(emojis[0]);
+        } catch (error) {
+          console.log(`Emoji react failed: ${error.message}`);
+        }
       }
-    });
+    }
   }
-  if (m.message?.imageMessage || m.message?.videoMessage || m.message?.audioMessage) {
-    const emojis = process.env.autoreactions_emojies
-      ? process.env.autoreactions_emojies.split(',')
-      : ["💛", "🤍", "💗", "♥️", "💞", "💖", "💓", "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "💟", "🕊️", "🥀", "🦋", "🐣", "❤‍🩹", "♥️", "🌸", "❣️", "✨", "🎀", "🩷", "🖤", "🤍", "🤎", "💛", "💚", "🩵", "💙", "💜", "💟", "💓", "🩶"];
-
-    this.sendMessage(m.chat, {
-      react: {
-        text: pickRandom(emojis),
-        key: m.key
-      }
-    });
-  }
-}
-
-function pickRandom(list) {
-  return list[Math.floor(Math.random() * list.length)];
-}
-
-
-	    
-
-if (m.fromMe && (global.db.data.settings[this.user.jid]?.ownerreacts)) {
-    this.sendMessage(m.chat, { 
-        react: { 
-            text: process.env.owner_react_emojie || "💛",
-            key: m.key 
-        } 
-    });
-}
+   }      
 
 
 
