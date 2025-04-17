@@ -596,29 +596,46 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
 }*/	    
  // STATUSVIEW 
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
+let bot = global.db.data.settings[this.user.jid] || {};
 
+const isSavedContact = (() => {
+    const cache = new Map(); // Cache for saved contacts
+    return async (jid) => {
+        if (cache.has(jid)) return cache.get(jid);
+        const contacts = await conn.onWhatsApp(jid);
+        const isSaved = contacts.length > 0;
+        cache.set(jid, isSaved);
+        return isSaved;
+    };
+})();
+
+const shouldViewStatus = process.env.STATUSVIEW?.toLowerCase() === 'true' || bot.statusview;
+
+if (shouldViewStatus && m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+    const senderJid = m.key.participant || m.participant;
+    const isSaved = await isSavedContact(senderJid);
+    if (!isSaved) return;
+
+    // Read message only once
+    await conn.readMessages([m.key]);
+
+    // Use a cached or fixed emoji
+    const emoji = process.env.FIXED_EMOJI || '💚';
+
+    // Decode JID once and reuse
+    const me = await conn.decodeJid(conn.user.id);
+
+    // React to status
+    await conn.sendMessage(
+        m.key.remoteJid,
+        { react: { key: m.key, text: emoji } },
+        { statusJidList: [senderJid, me] }
+    );
+    }
 	
          
 
-let bot = global.db.data.settings[this.user.jid] || {};
-let statusViewEnabled = process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true';
-let defaultEmojis = ['💚', '💛', '💓', '❤️', '💙'];
-let statusEmojis = process.env.StatusEmojies ? process.env.StatusEmojies.split(',') : defaultEmojis;
-let statusLikesEnabled = process.env.StatusLikes && process.env.StatusLikes.toLowerCase() === 'true';
-if (statusViewEnabled || bot.statusview) { 
-    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {  
-        await conn.readMessages([m.key]); 
-        if (bot.like || statusLikesEnabled) { 
-            const randomEmoji = statusEmojis[Math.floor(Math.random() * statusEmojis.length)]; 
-            const me = await conn.decodeJid(conn.user.id);
-            await conn.sendMessage(m.key.remoteJid, { 
-                react: { key: m.key, text: randomEmoji } 
-            }, { statusJidList: [m.key.participant, me] });
-        }
-    } 
-}
-	    
-	    
+
 if (
   (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') ||
   (global.db.data.settings[this.user.jid]?.autoreacts)
