@@ -50,46 +50,6 @@
       "description": "it will dlt links and kick user",
       "required": false,
       "value": "true"
-    },
-    "AutoReaction": {
-      "description": "make it true to react on chats",
-      "required": false,
-      "value": "true"
-    },
-    "STATUSVIEW": {
-      "description": "make it true to auto view status and likes",
-      "required": false,
-      "value": "true"
-    },
-    "STATUS_MSG": {
-      "description": "Status reply msg",
-      "required": false,
-      "value": "Your Status has been seen by Prince bot"
-    },
-    "REJECTSCALLS": {
-      "description": "type in truemsg get call reject with message or just make it true to only reject the call",
-      "required": false,
-      "value": "false"
-    },
-    "CALLMSG": {
-      "description": "Call msg for reject calls",
-      "required": false,
-      "value": "For now calls are restricted by my owner"
-    },
-    "ANTIFAKE_USERS": {
-      "description": "Add numbers to a variable. The bot will remove users from the group for these numbers. If a number isn’t in the variable, the bot will not take any action. To target all numbers, use this format: 1,2,3,4,5,6,7,8,9. ",
-      "required": false,
-      "value": "1,212,63,44"
-    },
-    "PACK_NAME": {
-      "description": "put your stickers pack name",
-      "required": false,
-      "value": "Prince♥️"
-    },
-    "DL_MSG": {
-      "description": "Video downloader caption",
-      "required": true,
-      "value": "_*📥DOWNLOADED SUCCESSFULLY✅*_"
     } 
   },
   "buildpacks": [
