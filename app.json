@@ -21,17 +21,7 @@
       "required": true,
       "value": "PRINCE-BOT"
     },
-    "OWNER_NUMBER": {
-      "description": "put your Number and name for Owner",
-      "required": true,
-      "value": "639129985130,DEVELOPER"
-    },
-    "owner_react_emojie": {
-      "description": "put one emojie for owner reacts",
-      "required": false,
-      "value": "🤍"
-    },
-    "MODE": {
+        "MODE": {
       "description": "choose bot mode public or private",
       "required": true,
       "value": "public"
@@ -64,37 +54,12 @@
     "AutoReaction": {
       "description": "make it true to react on chats",
       "required": false,
-      "value": "false"
-    },
-    "autoreactions_emojies": {
-      "description": "put your favourite emojies for AutoReactions on chats or make it empty for all default emojies",
-      "required": false,
-      "value": "♥️,🤗,❤️,💞,❣️,💙,💛,🤍,💚,😍,🥰,💝,💖,💗,💓,💞,💕,❣️,💘,💟,🖤,🤎,💜,💫,🌸"
-    },
-    "VAR_APP": {
-      "description": "put same app name you entered above",
-      "required": true,
-      "value": ""
-    },
-    "VAR_KEY": {
-      "description": "put heroku key click on accounts scroll down copy that key past here",
-      "required": true,
-      "value": ""
+      "value": "true"
     },
     "STATUSVIEW": {
       "description": "make it true to auto view status and likes",
       "required": false,
       "value": "true"
-    },
-    "StatusLikes": {
-      "description": "make it true to auto likes on status",
-      "required": false,
-      "value": "false"
-    },
-    "StatusEmojies": {
-      "description": "Add your favorites emojies for status likes",
-      "required": false,
-      "value": "♥️,🤗,❤️,💞,❣️,💙,💛,🤍,💚,😍,🥰,💝,💖,💗,💓,💞,💕,❣️,💘,💟,🖤,🤎,💜,💫,🌸"
     },
     "STATUS_MSG": {
       "description": "Status reply msg",
