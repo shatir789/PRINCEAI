@@ -623,12 +623,12 @@ if (
   (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') ||
   (global.db.data.settings[this.user.jid]?.autoreacts)
 ) {
+  const isReact = !!m.message?.reactionMessage; // Define this!
+
   if (!isReact) {
-    // Check if message contains a link (http/https) or just numbers (1, 2, 3, 4)
     const hasLink = /https?:\/\/\S+/i.test(m.body);
     const isOnlyNumbers = /^[\d\s]+$/.test(m.body);
     
-    // If no link and not just numbers, then check for emoji
     if (!hasLink && !isOnlyNumbers) {
       const emojis = m.body.match(/[\p{Emoji}]/gu);
       if (emojis?.length) {
@@ -640,7 +640,7 @@ if (
       }
     }
   }
-   }      
+}
 
 
 
