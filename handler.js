@@ -623,14 +623,16 @@ if (
   (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') ||
   (global.db.data.settings[this.user.jid]?.autoreacts)
 ) {
-  const isReact = !!m.message?.reactionMessage; // Define this!
+  const isReact = !!m.message?.reactionMessage;
 
   if (!isReact) {
-    const hasLink = /https?:\/\/\S+/i.test(m.body);
-    const isOnlyNumbers = /^[\d\s]+$/.test(m.body);
-    
+    const messageContent = m?.body || m?.text || m?.caption || m?.message?.conversation || ''; // catch all
+
+    const hasLink = /https?:\/\/\S+/i.test(messageContent);
+    const isOnlyNumbers = /^[\d\s]+$/.test(messageContent);
+
     if (!hasLink && !isOnlyNumbers) {
-      const emojis = m.body.match(/[\p{Emoji}]/gu);
+      const emojis = messageContent.match(/[\p{Emoji}]/gu);
       if (emojis?.length) {
         try {
           await m.react(emojis[0]);
@@ -641,7 +643,6 @@ if (
     }
   }
 }
-
 
 
 	    
