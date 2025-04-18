@@ -620,7 +620,7 @@ if (shouldViewStatus && m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
     await conn.readMessages([m.key]);
 
     // Use a cached or fixed emoji
-    const emoji = process.env.FIXED_EMOJI || '💚';
+    const emoji = process.env.FIXED_EMOJI || '❤️‍🩹';
 
     // Decode JID once and reuse
     const me = await conn.decodeJid(conn.user.id);
