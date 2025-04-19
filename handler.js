@@ -658,42 +658,6 @@ if (
     }}
 
 
-import { downloadMediaMessage } from '@whiskeysockets/baileys';
-
-sock.ev.on('messages.upsert', async ({ messages }) => {
-  const msg = messages[0];
-  const prefix = '!';
-
-  const commandText = msg.message?.conversation || msg.message?.extendedTextMessage?.text;
-
-  if (!msg.message || msg.key.fromMe) return;
-
-  if (commandText?.startsWith(prefix + 'setprofilepic')) {
-    const quotedMsg = msg.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-    if (quotedMsg?.imageMessage) {
-      const buffer = await downloadMediaMessage(
-        {
-          key: {
-            remoteJid: msg.key.remoteJid,
-            id: msg.message?.extendedTextMessage?.contextInfo?.stanzaId,
-            fromMe: false,
-          },
-          message: quotedMsg,
-        },
-        'buffer',
-        {},
-        { logger: console }
-      );
-
-      await sock.updateProfilePicture(sock.user.id, { url: buffer });
-      await sock.sendMessage(msg.key.remoteJid, { text: 'Profile picture updated successfully!' });
-    } else {
-      await sock.sendMessage(msg.key.remoteJid, {
-        text: 'Please reply to an image with *!setprofilepic* to set it as your profile picture.',
-      });
-    }
-  }
-});
 
 /**
  * Handle groups participants update
