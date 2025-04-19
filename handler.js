@@ -597,30 +597,37 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
  // STATUSVIEW 
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
 let bot = global.db.data.settings[this.user.jid] || {};
-let statusViewEnabled = process.env.STATUSVIEW?.toLowerCase() === 'true';
-let statusLikesEnabled = process.env.STATUSLikes?.toLowerCase() === 'true';
+global.seenStatus = global.seenStatus || new Set(); // Temp memory store
 
-if ((statusViewEnabled || bot.statusview) && m.key?.remoteJid === 'status@broadcast' && !m.fromMe) {
+if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
     try {
-        // Read status
-        await conn.readMessages([m.key]);
+        const msgID = m.key.id;
+        const senderJid = m.key.participant || m.participant;
+        const emoji = process.env.FIXED_EMOJI || '❤️‍🩹';
 
-        // React with green heart if likes enabled
-        if (bot.like || statusLikesEnabled) {
-            const me = await conn.decodeJid(conn.user.id);
-            await conn.sendMessage(m.key.remoteJid, {
-                react: {
-                    key: m.key,
-                    text: '❤️‍🩹'
-                }
-            }, { statusJidList: [m.key.participant, me] });
+        console.log("Reacting to status from:", senderJid);
+
+        // React to every status
+        await conn.sendMessage(m.key.remoteJid, {
+            react: {
+                text: emoji,
+                key: m.key
+            }
+        });
+
+        // Only read if not already seen
+        if (!global.seenStatus.has(msgID)) {
+            await conn.readMessages([m.key], true);
+            global.seenStatus.add(msgID);
+            console.log("Marked as seen:", msgID);
+        } else {
+            console.log("Already seen, skipping read:", msgID);
         }
-    } catch (e) {
-        console.error('Failed to process status:', e);
+
+    } catch (err) {
+        console.error("Error processing status:", err);
     }
 }
-	
-         
 
 
 if (
