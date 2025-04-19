@@ -597,41 +597,28 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
  // STATUSVIEW 
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
 let bot = global.db.data.settings[this.user.jid] || {};
+let statusViewEnabled = process.env.STATUSVIEW?.toLowerCase() === 'true';
+let statusLikesEnabled = process.env.STATUSLikes?.toLowerCase() === 'true';
 
-const isSavedContact = (() => {
-    const cache = new Map(); // Cache for saved contacts
-    return async (jid) => {
-        if (cache.has(jid)) return cache.get(jid);
-        const contacts = await conn.onWhatsApp(jid);
-        const isSaved = contacts.length > 0;
-        cache.set(jid, isSaved);
-        return isSaved;
-    };
-})();
+if ((statusViewEnabled || bot.statusview) && m.key?.remoteJid === 'status@broadcast' && !m.fromMe) {
+    try {
+        // Read status
+        await conn.readMessages([m.key]);
 
-const shouldViewStatus = process.env.STATUSVIEW?.toLowerCase() === 'true' || bot.statusview;
-
-if (shouldViewStatus && m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
-    const senderJid = m.key.participant || m.participant;
-    const isSaved = await isSavedContact(senderJid);
-    if (!isSaved) return;
-
-    // Read message only once
-    await conn.readMessages([m.key]);
-
-    // Use a cached or fixed emoji
-    const emoji = process.env.FIXED_EMOJI || '❤️‍🩹';
-
-    // Decode JID once and reuse
-    const me = await conn.decodeJid(conn.user.id);
-
-    // React to status
-    await conn.sendMessage(
-        m.key.remoteJid,
-        { react: { key: m.key, text: emoji } },
-        { statusJidList: [senderJid, me] }
-    );
+        // React with green heart if likes enabled
+        if (bot.like || statusLikesEnabled) {
+            const me = await conn.decodeJid(conn.user.id);
+            await conn.sendMessage(m.key.remoteJid, {
+                react: {
+                    key: m.key,
+                    text: '❤️‍🩹'
+                }
+            }, { statusJidList: [m.key.participant, me] });
+        }
+    } catch (e) {
+        console.error('Failed to process status:', e);
     }
+}
 	
          
 
