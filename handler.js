@@ -597,74 +597,73 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
  // STATUSVIEW 
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
 
-	
-         
-
 let bot = global.db.data.settings[this.user.jid] || {};
-let statusViewEnabled = process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true';
-let defaultEmojis = ['💚', '💛', '💓', '❤️', '💙'];
-let statusEmojis = process.env.StatusEmojies ? process.env.StatusEmojies.split(',') : defaultEmojis;
-let statusLikesEnabled = process.env.StatusLikes && process.env.StatusLikes.toLowerCase() === 'true';
-if (statusViewEnabled || bot.statusview) { 
-    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {  
-        await conn.readMessages([m.key]); 
-        if (bot.like || statusLikesEnabled) { 
-            const randomEmoji = statusEmojis[Math.floor(Math.random() * statusEmojis.length)]; 
-            const me = await conn.decodeJid(conn.user.id);
-            await conn.sendMessage(m.key.remoteJid, { 
-                react: { key: m.key, text: randomEmoji } 
-            }, { statusJidList: [m.key.participant, me] });
-        }
-    } 
+if (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true') {
+    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+        await conn.readMessages([m.key]);
+
+        // Fetch emoji from .env or use default
+        const emoji = process.env.FIXED_EMOJI || '❤️‍🩹';
+        const me = await conn.decodeJid(conn.user.id);
+
+        await conn.sendMessage(
+            m.key.remoteJid,
+            { react: { key: m.key, text: emoji } },
+            { statusJidList: [m.key.participant, me] }
+        );
+    }
+} else if (bot.statusview) {
+    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+        await conn.readMessages([m.key]);
+
+        // Fetch emoji from .env or use default
+        const emoji = process.env.FIXED_EMOJI || '❤️‍🩹';
+        const me = await conn.decodeJid(conn.user.id);
+
+        await conn.sendMessage(
+            m.key.remoteJid,
+            { react: { key: m.key, text: emoji } },
+            { statusJidList: [m.key.participant, me] }
+        );
+    }
 }
-	    
-	    
+
 
 if (
   (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') ||
   (global.db.data.settings[this.user.jid]?.autoreacts)
 ) {
-  if (m.text && m.text.match(/(prince|a|ا|م|ي|ء|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z)/gi)) {
-    const emojis = process.env.autoreactions_emojies
-      ? process.env.autoreactions_emojies.split(',')
-      : ["💛", "🤍", "💗", "♥️", "💞", "💖", "💓", "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "💟", "🕊️", "🥀", "🦋", "🐣", "❤‍🩹", "♥️", "🌸", "❣️", "✨", "🎀", "🩷", "🖤", "🤍", "🤎", "💛", "💚", "🩵", "💙", "💜", "💟", "💓", "🩶"];
+  const isReact = !!m.message?.reactionMessage;
 
-    this.sendMessage(m.chat, {
-      react: {
-        text: (m.sender === '923092668108@s.whatsapp.net') ? "👑" : pickRandom(emojis),
-        key: m.key
-      }
-    });
-  }
-  if (m.message?.imageMessage || m.message?.videoMessage || m.message?.audioMessage) {
-    const emojis = process.env.autoreactions_emojies
-      ? process.env.autoreactions_emojies.split(',')
-      : ["💛", "🤍", "💗", "♥️", "💞", "💖", "💓", "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "💟", "🕊️", "🥀", "🦋", "🐣", "❤‍🩹", "♥️", "🌸", "❣️", "✨", "🎀", "🩷", "🖤", "🤍", "🤎", "💛", "💚", "🩵", "💙", "💜", "💟", "💓", "🩶"];
+  if (!isReact) {
+    const messageContent = m?.body || m?.text || m?.caption || m?.message?.conversation || ''; // catch all
 
-    this.sendMessage(m.chat, {
-      react: {
-        text: pickRandom(emojis),
-        key: m.key
+    const hasLink = /https?:\/\/\S+/i.test(messageContent);
+    const isOnlyNumbers = /^[\d\s]+$/.test(messageContent);
+
+    if (!hasLink && !isOnlyNumbers) {
+      const emojis = messageContent.match(/[\p{Emoji}]/gu);
+      if (emojis?.length) {
+        try {
+          await m.react(emojis[0]);
+        } catch (error) {
+          console.log(`Emoji react failed: ${error.message}`);
+        }
       }
-    });
+    }
   }
 }
+	    
 
-function pickRandom(list) {
-  return list[Math.floor(Math.random() * list.length)];
-}
+	    
+	    
 
+
+        
 
 	    
 
-if (m.fromMe && (global.db.data.settings[this.user.jid]?.ownerreacts)) {
-    this.sendMessage(m.chat, { 
-        react: { 
-            text: process.env.owner_react_emojie || "💛",
-            key: m.key 
-        } 
-    });
-}
+
 
 
 
