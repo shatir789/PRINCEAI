@@ -638,22 +638,31 @@ if (
   if (!isReact) {
     const messageContent = m?.body || m?.text || m?.caption || m?.message?.conversation || ''; // catch all
 
-    const hasLink = /https?:\/\/\S+/i.test(messageContent);
     const isOnlyNumbers = /^[\d\s]+$/.test(messageContent);
 
-    if (!hasLink && !isOnlyNumbers) {
-      const emojis = messageContent.match(/[\p{Emoji}]/gu);
+    if (!isOnlyNumbers) {
+      // Define a stricter regex for valid emojis, excluding unwanted characters
+      const validEmojiRegex = /[\p{Emoji_Presentation}\p{Emoji}\u200D\uFE0F]/gu;
+      const emojis = messageContent.match(validEmojiRegex);
+
       if (emojis?.length) {
-        try {
-          await m.react(emojis[0]);
-        } catch (error) {
-          console.log(`Emoji react failed: ${error.message}`);
+        // Filter out unwanted prefixes or numbers
+        const filteredEmoji = emojis[0].replace(/[*"';!0-9]/g, '');
+
+        // Validate the emoji to ensure it's a single, valid emoji
+        if (filteredEmoji && /^[\p{Emoji_Presentation}\p{Emoji}\u200D\uFE0F]{1}$/u.test(filteredEmoji)) {
+          try {
+            await m.react(filteredEmoji);
+          } catch (error) {
+            console.log(`Emoji react failed: ${error.message}`);
+          }
+        } else {
+          console.log('No valid emoji found for reaction');
         }
       }
     }
   }
-}
-	    
+}    
 
 	    
 	    
