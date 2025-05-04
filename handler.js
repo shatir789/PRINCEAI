@@ -597,38 +597,29 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
  // STATUSVIEW 
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
 
-let bot = global.db.data.settings[this.user.jid] || {};
-if (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true') {
-    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
-        await conn.readMessages([m.key]);
 
-        // Fetch emoji from .env or use default
+ if (
+  (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true') ||
+  bot.statusview
+) {
+    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+        if (!m.key || !m.key.id || !m.key.participant) {
+            console.error(`Invalid message key for status:`, m.key);
+            return;
+        }
+
+        await tryReadMessages(conn, m.key);
+        await delay(1000); // Delay to avoid rate limiting
+
         const emoji = process.env.FIXED_EMOJI || '❤️‍🩹';
         const me = await conn.decodeJid(conn.user.id);
-
         await conn.sendMessage(
             m.key.remoteJid,
             { react: { key: m.key, text: emoji } },
             { statusJidList: [m.key.participant, me] }
         );
     }
-} else if (bot.statusview) {
-    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
-        await conn.readMessages([m.key]);
-
-        // Fetch emoji from .env or use default
-        const emoji = process.env.FIXED_EMOJI || '❤️‍🩹';
-        const me = await conn.decodeJid(conn.user.id);
-
-        await conn.sendMessage(
-            m.key.remoteJid,
-            { react: { key: m.key, text: emoji } },
-            { statusJidList: [m.key.participant, me] }
-        );
-    }
-}
-
-
+ }
 
 
 	if (
