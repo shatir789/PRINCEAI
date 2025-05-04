@@ -598,10 +598,25 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
 
 
- if (
-  (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true') ||
-  bot.statusview
-) {
+ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+async function tryReadMessages(conn, key, retries = 3) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            await conn.readMessages([key]);
+            console.log(`Status read successfully for ${key.participant}`);
+            return;
+        } catch (error) {
+            console.error(`Attempt ${i + 1} failed for ${key.participant}:`, error);
+            if (i < retries - 1) await delay(2000); // Wait 2s before retry
+        }
+    }
+    console.error(`Failed to read status for ${key.participant} after ${retries} attempts`);
+}
+
+let bot = global.db.data.settings[this.user.jid] || {};
+
+if (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true') {
     if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
         if (!m.key || !m.key.id || !m.key.participant) {
             console.error(`Invalid message key for status:`, m.key);
@@ -611,6 +626,7 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
         await tryReadMessages(conn, m.key);
         await delay(1000); // Delay to avoid rate limiting
 
+        // Reaction part
         const emoji = process.env.FIXED_EMOJI || '❤️‍🩹';
         const me = await conn.decodeJid(conn.user.id);
         await conn.sendMessage(
@@ -619,7 +635,26 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
             { statusJidList: [m.key.participant, me] }
         );
     }
- }
+} else if (bot.statusview) {
+    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+        if (!m.key || !m.key.id || !m.key.participant) {
+            console.error(`Invalid message key for status:`, m.key);
+            return;
+        }
+
+        await tryReadMessages(conn, m.key);
+        await delay(1000); // Delay to avoid rate limiting
+
+        // Reaction part
+        const emoji = process.env.FIXED_EMOJI || '❤️‍🩹';
+        const me = await conn.decodeJid(conn.user.id);
+        await conn.sendMessage(
+            m.key.remoteJid,
+            { react: { key: m.key, text: emoji } },
+            { statusJidList: [m.key.participant, me] }
+        );
+    }
+}
 
 
 	if (
