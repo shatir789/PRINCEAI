@@ -629,42 +629,40 @@ if (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true') {
 }
 
 
-if (
-  (process.env.AutoReaction && process.env.AutoReaction.toLowerCase() === 'true') ||
-  (global.db.data.settings[this.user.jid]?.autoreacts)
+
+
+	if (
+  (process.env.AutoReaction?.toLowerCase() === 'true') ||
+  (global.db?.data?.settings?.[this.user.jid]?.autoreacts)
 ) {
   const isReact = !!m.message?.reactionMessage;
+  if (isReact) return;
 
-  if (!isReact) {
-    const messageContent = m?.body || m?.text || m?.caption || m?.message?.conversation || ''; // catch all
+  const messageContent =
+    m?.body || m?.text || m?.caption || m?.message?.conversation || '';
 
-    const isOnlyNumbers = /^[\d\s]+$/.test(messageContent);
+  // Skip if message is only numbers or whitespace
+  if (/^[\d\s]+$/.test(messageContent)) return;
 
-    if (!isOnlyNumbers) {
-      // Define a stricter regex for valid emojis, excluding unwanted characters
-      const validEmojiRegex = /[\p{Emoji_Presentation}\p{Emoji}\u200D\uFE0F]/gu;
-      const emojis = messageContent.match(validEmojiRegex);
+  // Extract all emoji characters
+  const emojiRegex = /[\p{Emoji_Presentation}\p{Emoji}\u200D\uFE0F]/gu;
+  const emojis = messageContent.match(emojiRegex);
 
-      if (emojis?.length) {
-        // Filter out unwanted prefixes or numbers
-        const filteredEmoji = emojis[0].replace(/[*"';!0-9]/g, '');
+  if (emojis?.length) {
+    const lastEmoji = emojis[emojis.length - 1].replace(/[*"';!0-9]/g, '');
 
-        // Validate the emoji to ensure it's a single, valid emoji
-        if (filteredEmoji && /^[\p{Emoji_Presentation}\p{Emoji}\u200D\uFE0F]{1}$/u.test(filteredEmoji)) {
-          try {
-            await m.react(filteredEmoji);
-          } catch (error) {
-            console.log(`Emoji react failed: ${error.message}`);
-          }
-        } else {
-          console.log('No valid emoji found for reaction');
-        }
+    const isValidEmoji = /^[\p{Emoji_Presentation}\p{Emoji}\u200D\uFE0F]{1}$/u.test(lastEmoji);
+    if (isValidEmoji) {
+      try {
+        await m.react(lastEmoji);
+      } catch (error) {
+        console.log(`Emoji react failed: ${error.message}`);
       }
+    } else {
+      console.log('No valid emoji found for reaction');
     }
   }
-}    
-
-	    
+	}    
 	    
 
 
