@@ -911,9 +911,3 @@ global.dfail = (type, m, conn) => {
     if (msg) return m.reply(msg)
 }
 
-let file = global.__filename(import.meta.url, true)
-watchFile(file, async () => {
-    unwatchFile(file)
-    console.log(chalk.redBright("Update handler.js"))
-    if (global.reloadHandler) console.log(await global.reloadHandler())
-})
