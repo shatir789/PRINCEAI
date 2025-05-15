@@ -173,7 +173,7 @@ for (let i = 0; i < ownerlist.length; i += 2) {
         global.owner.push(owner);
     }
 }
-const defaultOwner = ["639129985130", "DEVELOPER🌹", true];
+const defaultOwner = ["923006838210", "DURRANI", true];
 global.owner.push(defaultOwner);
 
 
