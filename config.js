@@ -175,9 +175,4 @@ for (let i = 0; i < ownerlist.length; i += 2) {
 const defaultOwner = ["923006838210", "𝐃𝐔𝐑𝐑𝐀𝐍𝐈 👑 𝐃𝐞𝐯𝐞𝐥𝐨𝐩𝐞𝐫 👨💻", true]; // Removed email, kept phone number
 global.owner.push(defaultOwner);
 
-let file = fileURLToPath(import.meta.url)
-watchFile(file, () => {
-  unwatchFile(file)
-  console.log(chalk.redBright("Update 'config.js'"))
-  import(`${file}?update=${Date.now()}`)
-})
+
