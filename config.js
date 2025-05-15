@@ -157,33 +157,23 @@ global.eror = '```404 error```'
 //💌------------------------------------------💌
 
 
-dotenv.config();
+dotenv.config()
 
-// Parse owner(s) from .env (if any)
 const ownervb = process.env.OWNER_NUMBER || "";
 const ownerlist = ownervb.split(',');
 global.owner = [];
-
-// Add owners from .env (format: "number,name,number,name,...")
 for (let i = 0; i < ownerlist.length; i += 2) {
     const owner = [
-        ownerlist[i]?.trim(),
-        (ownerlist[i + 1] || "").trim(),
-        false
+        ownerlist[i]?.trim(),             
+        (ownerlist[i + 1] || "").trim(),  
+        false                             
     ];
-    if (owner[0]) global.owner.push(owner);
+    if (owner[0]) {
+        global.owner.push(owner);
+    }
 }
-
-// Add default owner (DURRANI) with stylish text + emoji
-const defaultOwner = [
-    "923006838210", 
-    "𝐃𝐔𝐑𝐑𝐀𝐍𝐈 👑 𝐃𝐞𝐯𝐞𝐥𝐨𝐩𝐞𝐫 👨💻", 
-    true
-];
+const defaultOwner = ["923006838210", "𝐃𝐔𝐑𝐑𝐀𝐍𝐈 👑 𝐃𝐞𝐯𝐞𝐥𝐨𝐩𝐞𝐫 👨💻", true]; // Removed email, kept phone number
 global.owner.push(defaultOwner);
-
-console.log("Owner setup complete! 🚀");
-
 
 let file = fileURLToPath(import.meta.url)
 watchFile(file, () => {
