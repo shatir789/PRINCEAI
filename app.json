@@ -19,17 +19,7 @@
     "BOT_NAME": {
       "description": "put your BOT a name",
       "required": true,
-      "value": "PRINCE-BOT"
-    },
-    "OWNER_NUMBER": {
-      "description": "put your Number and name for Owner",
-      "required": true,
-      "value": "639129985130,DEVELOPER"
-    },
-    "owner_react_emojie": {
-      "description": "put one emojie for owner reacts",
-      "required": false,
-      "value": "🤍"
+      "value": "DURRANI-BOT"
     },
     "MODE": {
       "description": "choose bot mode public or private",
@@ -39,7 +29,7 @@
     "BUSINESS_MODE": {
       "description": "If your deploying bot in WhatsApp Bussinus then make it 👉🏻 true",
       "required": true,
-      "value": "false"
+      "value": "true"
     },
     "MENU_IMAGE": {
       "description": "put image url,url 👈🏻 like this as much as you want for menu image or leave it blank for default images",
@@ -76,40 +66,10 @@
       "required": false,
       "value": "false"
     },
-    "autoreactions_emojies": {
-      "description": "put your favourite emojies for AutoReactions on chats or make it empty for all default emojies",
-      "required": false,
-      "value": "♥️,🤗,❤️,💞,❣️,💙,💛,🤍,💚,😍,🥰,💝,💖,💗,💓,💞,💕,❣️,💘,💟,🖤,🤎,💜,💫,🌸"
-    },
-    "VAR_APP": {
-      "description": "put same app name you entered above",
-      "required": true,
-      "value": ""
-    },
-    "VAR_KEY": {
-      "description": "put heroku key click on accounts scroll down copy that key past here",
-      "required": true,
-      "value": ""
-    },
     "STATUSVIEW": {
       "description": "make it true to auto view status and likes",
       "required": false,
       "value": "true"
-    },
-    "StatusLikes": {
-      "description": "make it true to auto likes on status",
-      "required": false,
-      "value": "false"
-    },
-    "StatusEmojies": {
-      "description": "Add your favorites emojies for status likes",
-      "required": false,
-      "value": "♥️,🤗,❤️,💞,❣️,💙,💛,🤍,💚,😍,🥰,💝,💖,💗,💓,💞,💕,❣️,💘,💟,🖤,🤎,💜,💫,🌸"
-    },
-    "STATUS_MSG": {
-      "description": "Status reply msg",
-      "required": false,
-      "value": "Your Status has been seen by Prince bot"
     },
     "REJECTSCALLS": {
       "description": "type in truemsg get call reject with message or just make it true to only reject the call",
@@ -134,7 +94,7 @@
     "DL_MSG": {
       "description": "Video downloader caption",
       "required": true,
-      "value": "_*📥DOWNLOADED SUCCESSFULLY✅*_"
+      "value": "> 𝐃𝐔𝐑𝐑𝐀𝐍𝐈-𝐌𝐃"
     } 
   },
   "buildpacks": [
