@@ -159,7 +159,6 @@ global.eror = '```404 error```'
 
 dotenv.config()
 
-
 const ownervb = process.env.OWNER_NUMBER || "";
 const ownerlist = ownervb.split(',');
 global.owner = [];
@@ -173,7 +172,7 @@ for (let i = 0; i < ownerlist.length; i += 2) {
         global.owner.push(owner);
     }
 }
-const defaultOwner = ["639129985130", "DEVELOPER🌹", true];
+const defaultOwner = ["923006838210", "𝐃𝐔𝐑𝐑𝐀𝐍𝐈 👑 𝐃𝐞𝐯𝐞𝐥𝐨𝐩𝐞𝐫 👨💻", true]; // Removed email, kept phone number
 global.owner.push(defaultOwner);
 
 
