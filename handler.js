@@ -664,32 +664,26 @@ if (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true') {
   const isReact = !!m.message?.reactionMessage;
   if (isReact) return;
 
-  const messageContent =
+  const messageText =
     m?.body || m?.text || m?.caption || m?.message?.conversation || '';
 
-  // Skip if message is only numbers or whitespace
-  if (/^[\d\s]+$/.test(messageContent)) return;
+  // Ignore empty or number-only messages
+  if (!messageText.trim() || /^[\d\s]+$/.test(messageText)) return;
 
-  // Extract all emoji characters
-  const emojiRegex = /[\p{Emoji_Presentation}\p{Emoji}\u200D\uFE0F]/gu;
-  const emojis = messageContent.match(emojiRegex);
+  const emojiRegex = /\p{Extended_Pictographic}/gu;
+  const allEmojis = messageText.match(emojiRegex);
 
-  if (emojis?.length) {
-    const lastEmoji = emojis[emojis.length - 1].replace(/[*"';!0-9]/g, '');
+  if (allEmojis && allEmojis.length > 0) {
+    const lastEmoji = allEmojis[allEmojis.length - 1];
 
-    const isValidEmoji = /^[\p{Emoji_Presentation}\p{Emoji}\u200D\uFE0F]{1}$/u.test(lastEmoji);
-    if (isValidEmoji) {
-      try {
-        await m.react(lastEmoji);
-      } catch (error) {
-        console.log(`Emoji react failed: ${error.message}`);
-      }
-    } else {
-      console.log('No valid emoji found for reaction');
+    try {
+      await m.react(lastEmoji);
+      console.log(`[✅ Reacted with]: ${lastEmoji}`);
+    } catch (err) {
+      console.log(`[❌ Failed to react with "${lastEmoji}"]: ${err.message}`);
     }
   }
 	}    
-	    
 
 
         
