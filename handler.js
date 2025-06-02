@@ -598,21 +598,30 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
 
 
- let bot = global.db.data.settings[this.user.jid] || {};
-let statusViewEnabled = process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true';
+// پروسیس شدہ اسٹیٹس آئی ڈیز کو ٹریک کرنے کے لیے سیٹ
+const processedStatusIds = new Set();
 
-if (statusViewEnabled || bot.statusview) { 
-    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {  
-        await conn.readMessages([m.key]); 
+const statusViewEnabled = process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true';
+
+if (statusViewEnabled && m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+    // چیک کریں کہ اسٹیٹس ڈیلیٹ شدہ تو نہیں اور پہلے پروسیس نہیں ہوا
+    if (m.messageStubType !== 'REVOKE' && !processedStatusIds.has(m.key.id)) {
+        await conn.readMessages([m.key]);
         const fixedEmoji = '❤️‍🩹'; // فکسڈ ایموجی
         const me = await conn.decodeJid(conn.user.id);
-        await conn.sendMessage(m.key.remoteJid, { 
-            react: { key: m.key, text: fixedEmoji } 
+        await conn.sendMessage(m.key.remoteJid, {
+            react: { key: m.key, text: fixedEmoji }
         }, { statusJidList: [m.key.participant, me] });
-    } 
+
+        // اسٹیٹس آئی ڈی کو پروسیس شدہ کے طور پر نشان زد کریں
+        processedStatusIds.add(m.key.id);
+
+        // میموری لیک سے بچنے کے لیے پرانے آئی ڈیز صاف کریں
+        if (processedStatusIds.size > 1000) {
+            processedStatusIds.clear();
+        }
+    }
 }
-
-
 
 
 	if (
