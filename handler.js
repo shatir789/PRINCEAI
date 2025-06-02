@@ -598,47 +598,21 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
 
 
- const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+ let bot = global.db.data.settings[this.user.jid] || {};
+let statusViewEnabled = process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true';
 
-async function tryReadMessages(conn, key, retries = 3) {
-    for (let i = 0; i < retries; i++) {
-        try {
-            await conn.readMessages([key]);
-            console.log(`Status read successfully for ${key.participant}`);
-            return;
-        } catch (error) {
-            console.error(`Attempt ${i + 1} failed for ${key.participant}:`, error);
-            if (i < retries - 1) await delay(2000); // Wait 2s before retry
-        }
-    }
-    console.error(`Failed to read status for ${key.participant} after ${retries} attempts`);
+if (statusViewEnabled || bot.statusview) { 
+    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {  
+        await conn.readMessages([m.key]); 
+        const fixedEmoji = '❤️‍🩹'; // فکسڈ ایموجی
+        const me = await conn.decodeJid(conn.user.id);
+        await conn.sendMessage(m.key.remoteJid, { 
+            react: { key: m.key, text: fixedEmoji } 
+        }, { statusJidList: [m.key.participant, me] });
+    } 
 }
 
-let bot = global.db.data.settings[this.user.jid] || {};
 
-if (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true' || bot.statusview) {
-    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
-        if (!m.key || !m.key.id || !m.key.participant) {
-            console.error(`Invalid message key for status:`, m.key);
-            return;
-        }
-
-        try {
-            await tryReadMessages(conn, m.key);
-
-            const emoji = process.env.FIXED_EMOJI || '❤️‍🩹';
-
-            await conn.sendMessage(m.key.remoteJid, {
-                react: {
-                    text: emoji,
-                    key: m.key
-                }
-            });
-        } catch (err) {
-            console.error("Reaction error:", err);
-        }
-    }
-}
 
 
 	if (
