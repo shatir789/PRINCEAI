@@ -616,43 +616,27 @@ async function tryReadMessages(conn, key, retries = 3) {
 
 let bot = global.db.data.settings[this.user.jid] || {};
 
-if (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true') {
+if (process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true' || bot.statusview) {
     if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
         if (!m.key || !m.key.id || !m.key.participant) {
             console.error(`Invalid message key for status:`, m.key);
             return;
         }
 
-        await tryReadMessages(conn, m.key);
-        await delay(1000); // Delay to avoid rate limiting
+        try {
+            await tryReadMessages(conn, m.key);
 
-        // Reaction part
-        const emoji = process.env.FIXED_EMOJI || '❤️‍🩹';
-        const me = await conn.decodeJid(conn.user.id);
-        await conn.sendMessage(
-            m.key.remoteJid,
-            { react: { key: m.key, text: emoji } },
-            { statusJidList: [m.key.participant, me] }
-        );
-    }
-} else if (bot.statusview) {
-    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
-        if (!m.key || !m.key.id || !m.key.participant) {
-            console.error(`Invalid message key for status:`, m.key);
-            return;
+            const emoji = process.env.FIXED_EMOJI || '❤️‍🩹';
+
+            await conn.sendMessage(m.key.remoteJid, {
+                react: {
+                    text: emoji,
+                    key: m.key
+                }
+            });
+        } catch (err) {
+            console.error("Reaction error:", err);
         }
-
-        await tryReadMessages(conn, m.key);
-        await delay(1000); // Delay to avoid rate limiting
-
-        // Reaction part
-        const emoji = process.env.FIXED_EMOJI || '❤️‍🩹';
-        const me = await conn.decodeJid(conn.user.id);
-        await conn.sendMessage(
-            m.key.remoteJid,
-            { react: { key: m.key, text: emoji } },
-            { statusJidList: [m.key.participant, me] }
-        );
     }
 }
 
