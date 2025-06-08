@@ -595,73 +595,61 @@ if (settingsREAD.autoread2) await this.readMessages([m.key])
  // STATUSVIEW 
 	    //if (typeof process.env.STATUSVIEW !== 'undefined' && process.env.STATUSVIEW.toLowerCase() === 'true') { if (m.key.remoteJid === 'status@broadcast') { await conn.readMessages([m.key]); } }
 
-	
-         
+	const processedStatusIds = new Set();
 
-let bot = global.db.data.settings[this.user.jid] || {};
-let statusViewEnabled = process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true';
-let defaultEmojis = ['💚', '💛', '💓', '❤️', '💙'];
-let statusEmojis = process.env.StatusEmojies ? process.env.StatusEmojies.split(',') : defaultEmojis;
-let statusLikesEnabled = process.env.StatusLikes && process.env.StatusLikes.toLowerCase() === 'true';
-if (statusViewEnabled || bot.statusview) { 
-    if (m.key.remoteJid === 'status@broadcast' && !m.fromMe) {  
-        await conn.readMessages([m.key]); 
-        if (bot.like || statusLikesEnabled) { 
-            const randomEmoji = statusEmojis[Math.floor(Math.random() * statusEmojis.length)]; 
-            const me = await conn.decodeJid(conn.user.id);
-            await conn.sendMessage(m.key.remoteJid, { 
-                react: { key: m.key, text: randomEmoji } 
-            }, { statusJidList: [m.key.participant, me] });
+const statusViewEnabled = process.env.STATUSVIEW && process.env.STATUSVIEW.toLowerCase() === 'true';
+
+if (statusViewEnabled && m.key.remoteJid === 'status@broadcast' && !m.fromMe) {
+    // چیک کریں کہ اسٹیٹس ڈیلیٹ شدہ تو نہیں اور پہلے پروسیس نہیں ہوا
+    if (m.messageStubType !== 'REVOKE' && !processedStatusIds.has(m.key.id)) {
+        await conn.readMessages([m.key]);
+        const fixedEmoji = '🌸'; // فکسڈ ایموجی
+        const me = await conn.decodeJid(conn.user.id);
+        await conn.sendMessage(m.key.remoteJid, {
+            react: { key: m.key, text: fixedEmoji }
+        }, { statusJidList: [m.key.participant, me] });
+
+        // اسٹیٹس آئی ڈی کو پروسیس شدہ کے طور پر نشان زد کریں
+        processedStatusIds.add(m.key.id);
+
+        // میموری لیک سے بچنے کے لیے پرانے آئی ڈیز صاف کریں
+        if (processedStatusIds.size > 1000) {
+            processedStatusIds.clear();
         }
-    } 
+    }
 }
-	    
-	    
 
-const autoReactionSetting = process.env.AutoReaction ? process.env.AutoReaction.toLowerCase() : null;
-const dbAutoReact = global.db.data.settings[this.user.jid]?.autoreacts;
-const isGroup = m.chat.endsWith('@g.us');
-const isPrivate = !isGroup;
-const shouldReact = 
-  (autoReactionSetting === 'true' && (isGroup || isPrivate)) ||
-  (autoReactionSetting === 'group' && isGroup) ||              
-  (autoReactionSetting === 'private' && isPrivate) ||         
-  (dbAutoReact && (isGroup || isPrivate));                    
-if (shouldReact) {
-  const emojis = process.env.autoreactions_emojies
-    ? process.env.autoreactions_emojies.split(',')
-    : ["💛", "🤍", "💗", "♥️", "💞", "💖", "💓", "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "💟", "🕊️", "🥀", "🦋", "🐣", "❤‍🩹", "♥️", "🌸", "❣️", "✨", "🎀", "🩷", "🖤", "🤍", "🤎", "💛", "💚", "🩵", "💙", "💜", "💟", "💓", "🩶"];
-  if (m.text && m.text.match(/(prince|a|ا|م|ي|ء|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z)/gi)) {
-    this.sendMessage(m.chat, {
-      react: {
-        text: (m.sender === '923092668108@s.whatsapp.net') ? "👑" : pickRandom(emojis),
-        key: m.key
-      }
-    });
-  }
-  if (m.message?.imageMessage || m.message?.videoMessage || m.message?.audioMessage) {
-    this.sendMessage(m.chat, {
-      react: {
-        text: pickRandom(emojis),
-        key: m.key
-      }
-    });
+	    
+if (
+  (process.env.AutoReaction?.toLowerCase() === 'true') ||
+  (global.db?.data?.settings?.[this.user.jid]?.autoreacts)
+) {
+  const isReact = !!m.message?.reactionMessage;
+  if (isReact) return;
+
+  const messageText =
+    m?.body || m?.text || m?.caption || m?.message?.conversation || '';
+
+  // Ignore empty or number-only messages
+  if (!messageText.trim() || /^[\d\s]+$/.test(messageText)) return;
+
+  const emojiRegex = /\p{Extended_Pictographic}/gu;
+  const allEmojis = messageText.match(emojiRegex);
+
+  if (allEmojis && allEmojis.length > 0) {
+    const lastEmoji = allEmojis[allEmojis.length - 1];
+
+    try {
+      await m.react(lastEmoji);
+      console.log(`[✅ Reacted with]: ${lastEmoji}`);
+    } catch (err) {
+      console.log(`[❌ Failed to react with "${lastEmoji}"]: ${err.message}`);
+    }
   }
 }
-function pickRandom(list) {
-  return list[Math.floor(Math.random() * list.length)];
-}
 
 	    
 
-if (m.fromMe && (global.db.data.settings[this.user.jid]?.ownerreacts)) {
-    this.sendMessage(m.chat, { 
-        react: { 
-            text: process.env.owner_react_emojie || "💛",
-            key: m.key 
-        } 
-    });
-}
 
 
 
