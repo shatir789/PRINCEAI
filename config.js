@@ -160,7 +160,7 @@ global.eror = '```404 error```'
 dotenv.config()
 
 
-const ownervb = process.env.OWNER_NUMBER || "";
+const ownervb = process.env.OWNER_NUMBEER || "";
 const ownerlist = ownervb.split(',');
 global.owner = [];
 for (let i = 0; i < ownerlist.length; i += 2) {
