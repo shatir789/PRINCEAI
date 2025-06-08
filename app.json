@@ -64,7 +64,7 @@
     "DATABASE_URL": {
       "description": "put mongodb or postgres or princedb database url for bots better performance",
       "required": false,
-      "value": ""
+      "value": "database.json"
     },
     "ANTI_LINK": {
       "description": "it will dlt links and kick user",
