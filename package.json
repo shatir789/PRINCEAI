@@ -33,9 +33,10 @@
   "dependencies": {
     "@adiwajshing/keyed-db": "^0.2.4",
     "@brandond/findthelyrics": "^2.0.5",
+    "@takanashi-soft/tools": "github:takanashi-soft/soft-tools",
     "@vitalets/google-translate-api": "^9.2.0",
     "@bochilteam/scraper": "^5.0.1",
-    "@whiskeysockets/baileys": "github:gatanina-li/baileys",
+    "@whiskeysockets/baileys": "npm:@itsukichan/baileys",
     "acrcloud": "^1.4.0",
     "adm-zip": "^0.5.16",
     "api-dylux": "^1.7.2",
