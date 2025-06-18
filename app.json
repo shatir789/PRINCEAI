@@ -61,11 +61,6 @@
       "required": false,
       "value": "all"
     },
-    "DATABASE_URL": {
-      "description": "put mongodb or postgres or princedb database url for bots better performance",
-      "required": false,
-      "value": "database.json"
-    },
     "ANTI_LINK": {
       "description": "it will dlt links and kick user",
       "required": false,
@@ -134,7 +129,7 @@
     "DL_MSG": {
       "description": "Video downloader caption",
       "required": true,
-      "value": "_*📥DOWNLOADED SUCCESSFULLY✅*_"
+      "value": "_*Successfully Downloaded✔️✔️✔️*_"
     } 
   },
   "buildpacks": [
