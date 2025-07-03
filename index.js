@@ -26,6 +26,11 @@ app.get('/', (req, res) => {
   res.redirect('/prince.html');
 });
 
+// Add a status endpoint to check if the bot is running
+app.get('/status', (req, res) => {
+  res.json({ isRunning: isRunning });
+});
+
 app.listen(port, () => {
   console.log(chalk.green(`🌐 Server is running on port ${port}`));
 });
@@ -86,8 +91,6 @@ async function start(file) {
   p.on('exit', (_, code) => {
     isRunning = false;
     console.error('⚠️ ERROR ⚠️ >> ', code);
-  //  start('main.js'); //
-
     if (code === 0) return;
     watchFile(args[0], () => {
       unwatchFile(args[0]);
@@ -103,10 +106,10 @@ async function start(file) {
     const packageJsonData = await fsPromises.readFile(packageJsonPath, 'utf-8');
     const packageJsonObj = JSON.parse(packageJsonData);
     const currentTime = new Intl.DateTimeFormat('en-US', {
-  timeZone: 'Asia/Karachi',
-  dateStyle: 'full',
-  timeStyle: 'long',
-}).format(new Date()); //new Date().toLocaleString();
+      timeZone: 'Asia/Karachi',
+      dateStyle: 'full',
+      timeStyle: 'long',
+    }).format(new Date());
 
     let lineM = '⋯ ⋯ ⋯ ⋯ ⋯ ⋯ ⋯ ⋯ ⋯ ⋯ ⋯ 》';
     console.log(

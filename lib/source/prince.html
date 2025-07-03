@@ -1,122 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRINCE-BOT Status</title>
-    <style>
-        /* Body Styling */
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: linear-gradient(90deg, 
-                blue, skyblue, purple, white, black, #ff0000, #00ff00, #0000ff);
-            background-size: 300% 300%;
-            animation: gradientAnimation 8s infinite alternate;
-            overflow: hidden;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prince Bot Status</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(45deg, #1e1e2f, #1a3c6d, #ffffff, #1a3c6d, #1e1e2f);
+      background-size: 400%;
+      animation: gradientShift 15s ease infinite;
+      overflow: hidden;
+    }
 
-        @keyframes gradientAnimation {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 100% 50%; }
-        }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-        /* Central Box */
-        .container {
-            text-align: center;
-            padding: 30px;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            width: 80%;
-            max-width: 600px;
-            animation: fadeIn 2s ease-in-out;
-        }
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      animation: fadeIn 1.5s ease-in-out;
+      max-width: 500px;
+      width: 90%;
+    }
 
-        @keyframes fadeIn {
-            0% { opacity: 0; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1); }
-        }
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(-20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
 
-        /* Title Styling */
-        .title {
-            font-size: 48px;
-            font-weight: bold;
-            text-transform: uppercase;
-            color: white;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8),
-                         0 0 30px blue,
-                         0 0 45px skyblue;
-            animation: glow 3s infinite alternate;
-        }
+    h1 {
+      font-size: 2.8em;
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(0, 191, 255, 0.8);
+      margin-bottom: 20px;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
 
-        @keyframes glow {
-            0% { text-shadow: 0 0 15px rgba(255, 255, 255, 0.8); }
-            100% { text-shadow: 0 0 25px purple, 0 0 50px white; }
-        }
+    @keyframes glow {
+      0% { text-shadow: 0 0 10px rgba(0, 191, 255, 0.8), 0 0 20px rgba(0, 191, 255, 0.4); }
+      100% { text-shadow: 0 0 20px rgba(0, 191, 255, 1), 0 0 30px rgba(0, 191, 255, 0.6); }
+    }
 
-        /* Running Text */
-        .marquee {
-            margin-top: 20px;
-            overflow: hidden;
-            white-space: nowrap;
-            box-sizing: border-box;
-        }
+    #status {
+      font-size: 1.8em;
+      font-weight: bold;
+      padding: 10px 20px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+    }
 
-        .marquee span {
-            display: inline-block;
-            font-size: 22px;
-            color: white;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
-            animation: marqueeAnimation 12s linear infinite;
-        }
+    .online {
+      color: #00ff88;
+      background: rgba(0, 255, 136, 0.2);
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+      animation: pulse 2s infinite;
+    }
 
-        @keyframes marqueeAnimation {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
+    .offline {
+      color: #ff4d4d;
+      background: rgba(255, 77, 77, 0.2);
+      box-shadow: 0 0 15px rgba(255, 77, 77, 0.5);
+      animation: pulse 2s infinite;
+    }
 
-        /* Button Styling */
-        .action-btn {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 25px;
-            font-size: 18px;
-            color: white;
-            text-transform: uppercase;
-            text-decoration: none;
-            border: 2px solid white;
-            border-radius: 5px;
-            transition: 0.3s;
-            background: transparent;
-        }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
 
-        .action-btn:hover {
-            background: white;
-            color: black;
-            cursor: pointer;
-        }
-    </style>
+    /* Particle Background */
+    #particles-js {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Status Title -->
-        <div class="title">Prince Bot Online</div>
+  <div id="particles-js"></div>
+  <div class="container">
+    <h1>Prince Bot Status</h1>
+    <p id="status">Checking...</p>
+  </div>
 
-        <!-- Running Text -->
-        <div class="marquee">
-            <span>
-                Prince Bot is live! | Reliable, Fast, and Efficient | Always here to help! | Stay ahead with Prince Bot!
-            </span>
-        </div>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+    // Initialize particles.js
+    particlesJS('particles-js', {
+      particles: {
+        number: { value: 80, density: { enable: true, value_area: 800 } },
+        color: { value: ['#00b7eb', '#ffffff', '#1e90ff'] },
+        shape: { type: 'circle' },
+        opacity: { value: 0.5, random: true },
+        size: { value: 3, random: true },
+        line_linked: { enable: true, distance: 150, color: '#ffffff', opacity: 0.4, width: 1 },
+        move: { enable: true, speed: 2, direction: 'none', random: true, out_mode: 'out' }
+      },
+      interactivity: {
+        detect_on: 'canvas',
+        events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' } },
+        modes: { repulse: { distance: 100 }, push: { particles_nb: 4 } }
+      },
+      retina_detect: true
+    });
 
-        <!-- Action Button -->
-        <a href="#" class="action-btn">Get Started</a>
-    </div>
+    async function checkBotStatus() {
+      try {
+        const response = await fetch('/status');
+        const data = await response.json();
+        const statusElement = document.getElementById('status');
+
+        if (data.isRunning) {
+          statusElement.textContent = 'Prince Bot is Online';
+          statusElement.className = 'online';
+        } else {
+          statusElement.textContent = 'Prince Bot is Disconnected';
+          statusElement.className = 'offline';
+        }
+      } catch (error) {
+        const statusElement = document.getElementById('status');
+        statusElement.textContent = 'Prince Bot is Disconnected';
+        statusElement.className = 'offline';
+        console.error('Error fetching status:', error);
+      }
+    }
+
+    // Check status immediately and every 5 seconds
+    checkBotStatus();
+    setInterval(checkBotStatus, 5000);
+  </script>
 </body>
 </html>
