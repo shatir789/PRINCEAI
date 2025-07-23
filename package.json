@@ -47,6 +47,7 @@
     "body-parser": "^1.20.2",
     "cfonts": "^3.2.0",
     "chess.js": "^1.0.0-beta.8",
+    "cheerio": "1.0.0-rc.12",
     "chalk": "^5.1.0",
     "colors": "^1.4.0",
     "countries-and-timezones": "^3.6.0",
@@ -123,9 +124,5 @@
   },
         "overrides": {
         "cache-manager": "5.2.2"
-    },
-    "optionalDependencies": {
-    "cheerio": "npm:cheerio@1.0.0-rc.12"
-    
-  }
+        }
 }
