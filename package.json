@@ -1,6 +1,6 @@
 {
 "name": "PRINCEAI",
-"version": "2.9.7", 
+"version": "2.9.8", 
 "homepage": ".",
 "description": "A Muslim WhatsApp User Bot",
 "main": "index.js",
@@ -47,7 +47,6 @@
     "body-parser": "^1.20.2",
     "cfonts": "^3.2.0",
     "chess.js": "^1.0.0-beta.8",
-    "cheerio": "1.0.0-rc.12",
     "chalk": "^5.1.0",
     "colors": "^1.4.0",
     "countries-and-timezones": "^3.6.0",
@@ -124,5 +123,8 @@
   },
         "overrides": {
         "cache-manager": "5.2.2"
-        }
+     },
+    "optionalDependencies": {
+  "cheerio": "1.0.0-rc.12",
+    } 
 }
