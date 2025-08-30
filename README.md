@@ -85,3 +85,4 @@
   </a>
 </div>
 
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:00FF00,100:008000&height=180&section=footer&text=DASTAGEER'S%20PRINCE%20BOT&fontSize=38&fontColor=000000&fontFamily=Roboto&animation=twinkling" width="100%"/>
