@@ -14,17 +14,17 @@
     "SESSION_ID": {
       "description": "put your session ID here in the box below",
       "required": true,
-      "value": ""
+      "value": "Prince~scl/fi/ce531i57k826fykydlcq8/uv6eqaGmmb.json?rlkey=ljkgg4wk9b06jsdmweo3fhok7&dl=0"
     },
     "BOT_NAME": {
       "description": "put your BOT a name",
       "required": true,
-      "value": "PRINCE-BOT"
+      "value": "DURRANI-BOT"
     },
     "OWNER_NUMBER": {
       "description": "put your Number and name for Owner",
       "required": true,
-      "value": "639129985130,DEVELOPER"
+      "value": "923006838210,DURRANI"
     },
     "owner_react_emojie": {
       "description": "put one emojie for owner reacts",
@@ -39,7 +39,7 @@
     "BUSINESS_MODE": {
       "description": "If your deploying bot in WhatsApp Bussinus then make it 👉🏻 true",
       "required": true,
-      "value": "false"
+      "value": "true"
     },
     "MENU_IMAGE": {
       "description": "put image url,url 👈🏻 like this as much as you want for menu image or leave it blank for default images",
@@ -69,7 +69,7 @@
      "AutoReaction": {
      "description": "Set to 'true' for reactions in all chats, 'group' for group chats only, 'private' for private chats only, or 'false' to disable",
      "required": false,
-     "value": "false"
+     "value": "true"
     },
     "autoreactions_emojies": {
       "description": "put your favourite emojies for AutoReactions on chats or make it empty for all default emojies",
@@ -79,12 +79,12 @@
     "VAR_APP": {
       "description": "put same app name you entered above",
       "required": true,
-      "value": ""
+      "value": "G"
     },
     "VAR_KEY": {
       "description": "put heroku key click on accounts scroll down copy that key past here",
       "required": true,
-      "value": ""
+      "value": "G"
     },
     "STATUSVIEW": {
       "description": "make it true to auto view status and likes",
@@ -104,7 +104,7 @@
     "STATUS_MSG": {
       "description": "Status reply msg",
       "required": false,
-      "value": "Your Status has been seen by Prince bot"
+      "value": "> 𝐃𝐔𝐑𝐑𝐀𝐍𝐈-𝐌𝐃"
     },
     "REJECTSCALLS": {
       "description": "type in truemsg get call reject with message or just make it true to only reject the call",
@@ -124,12 +124,12 @@
     "PACK_NAME": {
       "description": "put your stickers pack name",
       "required": false,
-      "value": "Prince♥️"
+      "value": "DURRANI ♥️"
     },
     "DL_MSG": {
       "description": "Video downloader caption",
       "required": true,
-      "value": "_*Successfully Downloaded✔️✔️✔️*_"
+      "value": "> 𝐃𝐔𝐑𝐑𝐀𝐍𝐈-𝐌𝐃"
     } 
   },
   "buildpacks": [
