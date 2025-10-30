@@ -14,7 +14,7 @@
     "SESSION_ID": {
       "description": "put your session ID here in the box below",
       "required": true,
-      "value": "Prince~scl/fi/ce531i57k826fykydlcq8/uv6eqaGmmb.json?rlkey=ljkgg4wk9b06jsdmweo3fhok7&dl=0"
+      "value": "Prince~scl/fi/pvmezxapnh7rk7khq2ccl/bPUM2yfOFx.json?rlkey=ph0hlis39mddh2jhscjcw88at&dl=0"
     },
     "BOT_NAME": {
       "description": "put your BOT a name",
@@ -69,7 +69,7 @@
      "AutoReaction": {
      "description": "Set to 'true' for reactions in all chats, 'group' for group chats only, 'private' for private chats only, or 'false' to disable",
      "required": false,
-     "value": "true"
+     "value": "false"
     },
     "autoreactions_emojies": {
       "description": "put your favourite emojies for AutoReactions on chats or make it empty for all default emojies",
