@@ -113,25 +113,24 @@ async function start(file) {
 
     let lineM = '⋯ ⋯ ⋯ ⋯ ⋯ ⋯ ⋯ ⋯ ⋯ ⋯ ⋯ 》';
     console.log(
-      chalk.yellow(`╭${lineM}
-┊${chalk.blueBright('╭┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅')}
-┊${chalk.blueBright('┊')}${chalk.yellow(`🖥️ ${os.type()}, ${os.release()} - ${os.arch()}`)}
-┊${chalk.blueBright('┊')}${chalk.yellow(`💾 Total RAM: ${ramInGB.toFixed(2)} GB`)}
-┊${chalk.blueBright('┊')}${chalk.yellow(`💽 Free RAM: ${freeRamInGB.toFixed(2)} GB`)}
-┊${chalk.blueBright('╰┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅')}
-┊${chalk.blueBright('╭┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅')}
-┊${chalk.blueBright('┊')} ${chalk.blue.bold(`🟢INFORMATION:`)}
-┊${chalk.blueBright('┊')} ${chalk.blueBright('┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅')} 
-┊${chalk.blueBright('┊')}${chalk.cyan(`💚 Name: ${packageJsonObj.name}`)}
-┊${chalk.blueBright('┊')}${chalk.cyan(`💫 Version: ${packageJsonObj.version}`)}
-┊${chalk.blueBright('┊')}${chalk.cyan(`💜 Description: ${packageJsonObj.description}`)}
-┊${chalk.blueBright('┊')}${chalk.cyan(`💎 Project Author: ${packageJsonObj.author.name} (Prince❣️)`)}
-┊${chalk.blueBright('┊')}${chalk.blueBright('┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅')} 
-┊${chalk.blueBright('╭┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅')}
-┊${chalk.blueBright('┊')}${chalk.cyan(`⏰ Current Time :`)}
-┊${chalk.blueBright('┊')}${chalk.cyan(`${currentTime}`)}
-┊${chalk.blueBright('╰┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅')} 
-╰${lineM}`)
+  chalk.bold.blue(`
+╔═══════════════════════════════════════════╗
+║            📊 SYSTEM DASHBOARD            ║
+╠═══════════════════════════════════════════╣
+║  🖥️  ${os.type()}, ${os.release()} - ${os.arch()}
+║  💾 RAM: ${freeRamInGB.toFixed(2)} GB / ${ramInGB.toFixed(2)} GB
+╠═══════════════════════════════════════════╣
+║           🔵 PROJECT INFO                 ║
+╠═══════════════════════════════════════════╣
+║  📛 Name: ${packageJsonObj.name}
+║  🎯 Version: ${packageJsonObj.version}
+║  📝 Description: ${packageJsonObj.description}
+║  👑 Author: (Prince✍🏻)
+╠═══════════════════════════════════════════╣
+║  ⏰ Current Time: ${currentTime}
+╚═══════════════════════════════════════════╝
+`)
+);
     );
 
     setInterval(() => {}, 1000);
