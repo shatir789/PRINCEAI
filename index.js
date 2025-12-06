@@ -115,7 +115,7 @@ async function start(file) {
     console.log(
   chalk.bold.blue(`
 ╔═══════════════════════════════════════════╗
-║            📊 SYSTEM DASHBOARD            ║
+║            📊 PRINCE DASHBOARD            ║
 ╠═══════════════════════════════════════════╣
 ║  🖥️  ${os.type()}, ${os.release()} - ${os.arch()}
 ║  💾 RAM: ${freeRamInGB.toFixed(2)} GB / ${ramInGB.toFixed(2)} GB
@@ -130,7 +130,6 @@ async function start(file) {
 ║  ⏰ Current Time: ${currentTime}
 ╚═══════════════════════════════════════════╝
 `)
-);
     );
 
     setInterval(() => {}, 1000);
