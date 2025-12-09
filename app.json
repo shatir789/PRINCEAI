@@ -24,12 +24,12 @@
     "OWNER_NUMBER": {
       "description": "put your Number and name for Owner",
       "required": true,
-      "value": "639129985130,DEVELOPER"
+      "value": "923006838210,DEVELOPER"
     },
-    "owner_react_emojie": {
+    "REMOVEBG_KEY": {
       "description": "put one emojie for owner reacts",
       "required": false,
-      "value": "🤍"
+      "value": "9bmWKFYZUcJk7yAazpR4JhDo"
     },
     "MODE": {
       "description": "choose bot mode public or private",
@@ -49,12 +49,12 @@
     "PREFIX": {
       "description": "put any one symbol here leave it Blank if you want to use multiple prefix",
       "required": false,
-      "value": ""
+      "value": "."
     },
     "AlwaysOnline": {
       "description": "make it true to be always online",
       "required": false,
-      "value": "false" 
+      "value": "true" 
     },
     "antidelete": {
       "description": "Set 'private' to forward deleted messages only from private chats, 'all' to forward from both private and group chats, or 'false' to disable this feature.",
@@ -64,7 +64,7 @@
     "ANTI_LINK": {
       "description": "it will dlt links and kick user",
       "required": false,
-      "value": "true"
+      "value": "false"
     },
      "AutoReaction": {
      "description": "Set to 'true' for reactions in all chats, 'group' for group chats only, 'private' for private chats only, or 'false' to disable",
@@ -78,12 +78,12 @@
     },
     "VAR_APP": {
       "description": "put same app name you entered above",
-      "required": true,
+      "required": false,
       "value": ""
     },
     "VAR_KEY": {
       "description": "put heroku key click on accounts scroll down copy that key past here",
-      "required": true,
+      "required": false,
       "value": ""
     },
     "STATUSVIEW": {
@@ -104,7 +104,7 @@
     "STATUS_MSG": {
       "description": "Status reply msg",
       "required": false,
-      "value": "Your Status has been seen by Prince bot"
+      "value": "> 𝐃𝐔𝐑𝐑𝐀𝐍𝐈-𝐌𝐃"
     },
     "REJECTSCALLS": {
       "description": "type in truemsg get call reject with message or just make it true to only reject the call",
@@ -124,12 +124,12 @@
     "PACK_NAME": {
       "description": "put your stickers pack name",
       "required": false,
-      "value": "Prince♥️"
+      "value": "Faisal Durrani"
     },
     "DL_MSG": {
       "description": "Video downloader caption",
       "required": true,
-      "value": "_*Successfully Downloaded✔️✔️✔️*_"
+      "value": "> 𝐃𝐔𝐑𝐑𝐀𝐍𝐈-𝐌𝐃"
     } 
   },
   "buildpacks": [
