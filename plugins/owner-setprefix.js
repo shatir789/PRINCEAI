@@ -53,7 +53,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 
 handler.help = ['setprefix'].map((v) => v + ' [prefixes | none | del prefix]');
 handler.tags = ['owner'];
-handler.command = /^(setprefix1)$/i;
+handler.command = /^(setprefix|prefix)$/i;
 handler.owner = true;
 
 export default handler;
