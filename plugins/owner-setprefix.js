@@ -1,20 +1,59 @@
-let handler = async(m, { conn, text }) => {
-  if (!text) throw `No symbol detected ...`
+const handler = async (m, { conn, text, usedPrefix, command }) => {
+  const settings = global.db.data.settings[conn.user.jid] || {};
+  if (!('prefix' in settings)) {
+    settings.prefix = opts['prefix'] || '*/i!#$%+£¢€¥^°=¶∆×÷π√✓©®&.\\-.@'; // Default prefixes
+  }
+  const currentPrefix = settings.prefix || 'none';
 
-  // Regular expression to check if the input contains exactly one symbol
-  const symbolRegex = /^[^\w\s]{1}$/
-
-  if (!symbolRegex.test(text)) {
-    throw `Invalid symbol input. Please provide exactly one symbol as a prefix.`
+  if (!text) {
+    throw `Usage: ${usedPrefix + command} [prefixes] to set\n${usedPrefix + command} none to disable prefix\n${usedPrefix + command} del [prefix] to remove one.\nExample: ${usedPrefix + command} 🌟\n${usedPrefix + command} del /\n\nCurrent prefixes: [ ${currentPrefix} ]`;
   }
 
-  // If the input is valid (contains exactly one symbol), update the prefix
-  global.prefix = new RegExp('^[' + text.replace(/[|\\{}()[\]^$+*?.\-\^]/g, '\\$&') + ']')
-  await m.reply(`The prefix has been successfully changed to *${text}*`)
-}
-handler.help = ['.setprefix [symbol]']
-handler.tags = ['owner']
-handler.command = /^(setprefix)$/i
-handler.rowner = true
+  const args = text.trim().split(' ');
+  const action = args[0].toLowerCase();
 
-export default handler
+  if (action === 'none') {
+    if (!settings.prefix) {
+      await m.reply(`⚠️ The bot is already configured to work without a prefix.`);
+      return;
+    }
+    settings.prefix = null; // No prefix
+    global.db.data.settings[conn.user.jid] = settings;
+    await m.reply(`✅ All prefixes have been removed. Commands will now work without a prefix.`);
+  } else if (action === 'del') {
+    const prefixToDelete = args[1];
+    if (!prefixToDelete) {
+      throw `⚠️ Please specify the prefix to remove. Example: ${usedPrefix + command} del /`;
+    }
+    if (!settings.prefix) {
+      await m.reply(`⚠️ There are no prefixes configured to delete.`);
+      return;
+    }
+    if (!settings.prefix.includes(prefixToDelete)) {
+      await m.reply(`⚠️ The prefix [ ${prefixToDelete} ] is not in the current list.`);
+      return;
+    }
+    // Remove only the first occurrence (safe for single-char or multi-char)
+    settings.prefix = settings.prefix.replace(prefixToDelete, '');
+    if (settings.prefix === '') settings.prefix = null;
+    global.db.data.settings[conn.user.jid] = settings;
+    const updatedPrefix = settings.prefix || 'none';
+    await m.reply(`✅ The prefix [ ${prefixToDelete} ] has been removed. Current prefixes: [ ${updatedPrefix} ]`);
+  } else {
+    const newPrefix = text;
+    if (settings.prefix === newPrefix) {
+      await m.reply(`⚠️ The prefix [ ${newPrefix} ] is already set.`);
+      return;
+    }
+    settings.prefix = newPrefix;
+    global.db.data.settings[conn.user.jid] = settings;
+    await m.reply(`✅ Bot prefixes have been set to: [ ${newPrefix} ]`);
+  }
+};
+
+handler.help = ['setprefix'].map((v) => v + ' [prefixes | none | del prefix]');
+handler.tags = ['owner'];
+handler.command = /^(setprefix1)$/i;
+handler.owner = true;
+
+export default handler;
